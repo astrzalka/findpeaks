@@ -90,7 +90,8 @@ app_server <- function( input, output, session ) {
     usun_kompleksy <- sub(' ', '', unlist(stringr::str_split(input$usun, ',')))
     
     x[[1]] <- subset(x[[1]], !(id %in% usun_kompleksy))
-    
+    x[[1]]$parametry <- paste(input$sigma, input$procent, input$threshold, input$markov,
+                              input$usun, sep = '_')
     return(x)
     
   })
