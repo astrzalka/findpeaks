@@ -2,16 +2,16 @@
 % Please edit documentation in R/fct_helpers.R
 \name{dodaj_ind}
 \alias{dodaj_ind}
-\title{Title}
+\title{Uzupełnia indeksy w danych, które potem można użyć w funkcji find_peaks}
 \usage{
 dodaj_ind(dane)
 }
 \arguments{
-\item{dane}{}
+\item{dane}{ramka danych z dwiema kolumnami: długość, intensywność fluorescencji}
 }
 \value{
-
+ramkę danych z dodaną kolumną ind
 }
 \description{
-Title
+Uzupełnia indeksy w danych, które potem można użyć w funkcji find_peaks
 }

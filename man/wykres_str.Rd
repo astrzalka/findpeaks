@@ -2,22 +2,22 @@
 % Please edit documentation in R/fct_helpers.R
 \name{wykres_str}
 \alias{wykres_str}
-\title{Title}
+\title{Rysuje wykres ggplot, komórki jako słupki, kompleksy jako kropki}
 \usage{
 wykres_str(wynik, int = c("int_nor", "int_raw"), zaznacz = FALSE, size = TRUE)
 }
 \arguments{
-\item{wynik}{}
+\item{wynik}{wynik funkcji find_peaks}
 
-\item{int}{}
+\item{int}{czy intensywność ma być znormalizowana}
 
-\item{zaznacz}{}
+\item{zaznacz}{czy ma zaznaczać najsilniejszy kompleks}
 
-\item{size}{}
+\item{size}{tylko dla int_nor, czy wielkość kompleksu ma odpowiadać intensywności, FALSE - gradient kolorów}
 }
 \value{
-
+obiekt ggplot
 }
 \description{
-Title
+Rysuje wykres ggplot, komórki jako słupki, kompleksy jako kropki
 }

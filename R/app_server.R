@@ -6,7 +6,7 @@
 #' @noRd
 app_server <- function( input, output, session ) {
   # List the first level callModules here
-
+  
   library(Peaks)
   library.dynam('Peaks', 'Peaks', lib.loc=NULL) 
   library(magrittr)
@@ -30,7 +30,7 @@ app_server <- function( input, output, session ) {
     colnames(d) <- c('V1', 'V2')
     return(d)
     
-
+    
   }) 
   
   #   punkt <- reactiveValues(p = NULL)
@@ -98,17 +98,9 @@ app_server <- function( input, output, session ) {
     
     wyn <- wynik()
     
-    p <- ggplot2::ggplot(wyn[[2]])
-    p <- p+ggplot2::geom_line(ggplot2::aes(x = x, y = y), color = "red")+
-      ggplot2::facet_wrap(~czas, scales = "free")+
-      ggplot2::geom_line(ggplot2::aes(x = x, y = int))+
-      ggplot2::theme_bw()+
-      ggplot2::geom_point(data = wyn[[1]], ggplot2::aes(x = dist_tip, y = 1), color = "forestgreen", size = 3, shape = 3)
-    p
-  })
-  
-  output$info <- renderText({
-    paste0("x=", input$plot_click$x, "\ny=", input$plot_click$y)
+    p <- plot_find_peaks(wyn[[2]], wyn[[1]])
+    print(p)
+    
   })
   
   output$tabela <- renderTable({
@@ -121,28 +113,11 @@ app_server <- function( input, output, session ) {
   output$strzepka <- renderPlot({
     
     wyn <- wynik()
-    if(as.logical(input$odwroc == TRUE)){
-      p <- ggplot2::ggplot(wyn[[1]],  ggplot2::aes(y=dist_tip, x=czas))
-      p <- p + ggplot2::geom_bar(ggplot2::aes(x=czas, y=dlug), stat="identity", fill="snow3", color="black", 
-                    position="dodge", width=5)+
-        ggplot2::geom_point(color=input$punkt, ggplot2::aes(size=int_raw))+
-        ggplot2::scale_size_continuous(range=c(1,6), "Fluorescence\nintensity")+
-        ggplot2::theme_bw()+
-        ggplot2::ylab(expression(paste("Length [", mu, "m]")))+
-        ggplot2::xlab("Time [min]")
-      p
-    } else {
-      p <- ggplot2::ggplot(wyn[[1]],  ggplot2::aes(y=dist_base, x=czas))
-      p<-p+ggplot2::geom_bar(ggplot2::aes(x=czas, y=dlug), stat="identity", fill="snow3", color="black", 
-                    position="dodge", width=5)+
-        ggplot2::geom_point(color=input$punkt, ggplot2::aes(size=int_raw))+
-        ggplot2::scale_size_continuous(range=c(1,6), "Fluorescence\nintensity")+
-        ggplot2::theme_bw()+
-        ggplot2::ylab(expression(paste("Length [", mu, "m]")))+
-        ggplot2::xlab("Time [min]")
-      p
-      
-    }
+    
+    p <- plot_scheme_find_peaks(wyn[[1]], odwroc = input$odwroc, color_point = input$punkt)
+    
+    print(p)
+    
   })
   
   
@@ -152,49 +127,11 @@ app_server <- function( input, output, session ) {
     
     dane1 <- dane()
     
-    dane1 <- dodaj_ind(dane1)
+    p <- plot_kymograph_find_peaks(dane_raw = dane1, dane_find = wyn[[1]], odwroc = input$odwroc, 
+                                   pokaz = input$pokaz, color_point = input$punkt, 
+                                   color_gradient = input$gradient, lapse = input$lapse)
+    print(p)
     
-    dane1 <- dane1 %>% dplyr::group_by(ind) %>% dplyr::mutate(V3 = rev(V1))
-    
-    env <- environment()
-    
-    p <- ggplot2::ggplot(dane1, environment = env)
-    
-    if(as.logical(input$odwroc == TRUE)){
-      if(as.logical(input$pokaz) == TRUE){
-        p <- p + ggplot2::geom_tile(ggplot2::aes(x = (input$lapse + ind*input$lapse), y = V1, fill = V2))+
-          ggplot2::geom_point(data = wyn[[1]], ggplot2::aes(x = (input$lapse + indeks*input$lapse), y = dist_tip), 
-                     color = input$punkt, size = 3)+
-          ggplot2::scale_fill_gradient("Fluorescence\nintensity", low = "black", high = input$gradient)+
-          ggplot2::theme_bw()+
-          ggplot2::ylab(expression(paste("Length [", mu, "m]")))+
-          ggplot2::xlab("Time [min]")
-      } else {
-        p <- p + ggplot2::geom_tile(ggplot2::aes(x = (input$lapse + ind*input$lapse), y = V1, fill = V2))+
-          ggplot2::scale_fill_gradient("Fluorescence\nintensity", low = "black", high = input$gradient)+
-          ggplot2::theme_bw()+
-          ggplot2::ylab(expression(paste("Length [", mu, "m]")))+
-          ggplot2::xlab("Time [min]")
-      }
-    } else {
-      
-      if(as.logical(input$pokaz) == TRUE){
-        p <- p + ggplot2::geom_tile(ggplot2::aes(x = (input$lapse + ind*input$lapse), y = V3, fill = V2))+
-          ggplot2::geom_point(data = wyn[[1]], ggplot2::aes(x = (input$lapse + indeks*input$lapse), y = dist_base), 
-                     color = input$punkt, size = 3)+
-          ggplot2::scale_fill_gradient("Fluorescence\nintensity", low = "black", high = input$gradient)+
-          ggplot2::theme_bw()+
-          ggplot2::ylab(expression(paste("Length [", mu, "m]")))+
-          ggplot2::xlab("Time [min]")
-      } else {
-        p <- p + ggplot2::geom_tile(ggplot2::aes(x = (input$lapse + ind*input$lapse), y = V3, fill = V2))+
-          ggplot2::scale_fill_gradient("Fluorescence\nintensity", low = "black", high = input$gradient)+
-          ggplot2::theme_bw()+
-          ggplot2::ylab(expression(paste("Length [", mu, "m]")))+
-          ggplot2::xlab("Time [min]")
-      }
-    }
-    p
   })
   
   # download hyphae plot
