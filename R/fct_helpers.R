@@ -64,7 +64,8 @@ find_peaks <- function (ramka, s = 2, m = FALSE, procent = 1, threshold=10,
   }
   
   # sortuje wyniki najpierw według klatek, potem według odległości od tipa
-  wynik_kon<-dplyr::arrange(wynik_kon, indeks, dist_tip)
+  wynik_kon<-dplyr::arrange(wynik_kon, indeks, dist_tip) %>%
+    dplyr::mutate(id = 1:dplyr::n())
   # zwraca wynik
   return(list(wynik = wynik_kon, wynik2 = wynik2))
 }
@@ -176,13 +177,18 @@ dodaj_ind<-function(dane){
 #' @examples
 plot_find_peaks <- function(dane_raw, dane_find){
   
+  dane_raw %>% dplyr::group_by(czas) %>%
+    dplyr::summarise(maksimum = max(y)) %>% dplyr::right_join(dane_find, by = 'czas') -> dane_find2
+  
   p <- ggplot2::ggplot(dane_raw)
   p <- p+ggplot2::geom_line(ggplot2::aes(x = x, y = y), color = "red")+
     ggplot2::facet_wrap(~czas, scales = "free")+
     ggplot2::geom_line(ggplot2::aes(x = x, y = int))+
     ggplot2::theme_bw()+
     ggplot2::geom_point(data = dane_find, ggplot2::aes(x = dist_tip, y = 1), 
-                        color = "forestgreen", size = 3, shape = 3)
+                        color = "forestgreen", size = 3, shape = 3)+
+    ggplot2::geom_text(data = dane_find2, ggplot2::aes(x = dist_tip, y = 1.1*maksimum, label = id),
+                       color = 'darkblue')
   
   return(p)
 }

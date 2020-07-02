@@ -37,6 +37,8 @@ app_ui <- function(request) {
                                                     selected = "TRUE", inline = TRUE),
                                        numericInput("lapse", "Podaj wartość time-lapse (min)", 
                                                     value = 10),
+                                       textInput('usun', 'Czy chesz usunąć kompleksy? Podaj ich numery id po przecinku', 
+                                                 placeholder = 'np. 1, 4'),
                                        # radioButtons("akcja", "Wybierz akcję?", choices = list("Nic" = "nic", "Dodaj punkt" = "dodaj", "Usuń punkt" = 'usun'), selected = "nic"),
                                        # actionButton("dodaj", label = "Dodaj punkt"),
                                        selectInput("punkt", "Wybierz kolor punktów",

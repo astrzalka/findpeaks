@@ -87,6 +87,10 @@ app_server <- function( input, output, session ) {
     x[[1]]$komorka <- input$id
     x[[1]]$szczep <- input$szczep
     
+    usun_kompleksy <- sub(' ', '', unlist(stringr::str_split(input$usun, ',')))
+    
+    x[[1]] <- subset(x[[1]], !(id %in% usun_kompleksy))
+    
     return(x)
     
   })
