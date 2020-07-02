@@ -12,11 +12,24 @@ app_server <- function( input, output, session ) {
   library(magrittr)
   
   dane <- reactive({
-    validate(
-      need(input$dane != '', 'Proszę wybierz dane')
-    )
+    # validate(
+    #   need(input$dane != '', 'Proszę wybierz dane')
+    # )
+    
+    if(input$example == TRUE){
+      d <- dane_1
+      return(d)
+    }
+    
     inFile <- input$dane
-    read.table(inFile$datapath, header=FALSE)
+    if (is.null(inFile))
+      return(NULL)
+    
+    inFile <- input$dane
+    d <- read.table(inFile$datapath, header=input$header)
+    return(d)
+    
+
   }) 
   
   #   punkt <- reactiveValues(p = NULL)
@@ -47,6 +60,7 @@ app_server <- function( input, output, session ) {
   #   })
   #   
   
+  output$dane_raw <- renderTable(dane())
   
   
   wynik <- reactive({

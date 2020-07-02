@@ -16,10 +16,12 @@ app_ui <- function(request) {
                           
                           # boczny panel zawierający wszystkie suwaczki, przcyski itp.
                           sidebarPanel(
+                            checkboxInput('example', 'Czy chcesz załadować przykładowe dane?'),
                             fileInput("dane", 'Wybierz plik .txt',
-                                      accept=c('.txt'))
+                                      accept=c('.txt')),
+                            checkboxInput('header', 'Czy dane mają nagłówki?', value = TRUE)
                           ),
-                          mainPanel()
+                          mainPanel(tableOutput('dane_raw'))
                         )
                ),
                tabPanel("Analiza",
@@ -54,17 +56,20 @@ app_ui <- function(request) {
                                                     inline = TRUE),
                                        radioButtons("odwroc", "Czy początek pomiaru komórki ma być na dole wykresu?", 
                                                     choices = list("TRUE" = "TRUE", "FALSE" = "FALSE"), selected = "TRUE",
-                                                    inline = TRUE)
+                                                    inline = TRUE),
+                                       downloadButton('download_data', 'Pobierz wynik w formacie txt'),
+                                       width = 3
                           ),
                           mainPanel(
                             tabsetPanel(type = "tabs", 
-                                        tabPanel("Wykres", plotOutput("wykres", height = 500)
+                                        tabPanel("Wykres - wszystkie klatki", plotOutput("wykres", height = 900)
                                                  #verbatimTextOutput('info'),
                                                  #verbatimTextOutput('test')
                                         ),
-                                        tabPanel("Komórka", plotOutput("strzepka", height = 500)),
+                                        tabPanel("Schemat komórki", plotOutput("strzepka", height = 500)),
                                         tabPanel("Kymograf", plotOutput("kymograf", height = 500)),
-                                        tabPanel("Wynik", tableOutput("tabela")))
+                                        tabPanel("Wynik", tableOutput("tabela"))),
+                            width = 9
                           )
                         )
                         
