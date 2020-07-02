@@ -83,6 +83,9 @@ app_server <- function( input, output, session ) {
     #       }
     
     
+    x[[1]]$komorka <- input$id
+    x[[1]]$szczep <- input$szczep
+    
     return(x)
     
   })
@@ -192,6 +195,18 @@ app_server <- function( input, output, session ) {
     }
     p
   })
+  
+  # download hyphae plot
+  output$download_data <- downloadHandler(
+    
+    filename = function() {
+      paste('wynik', input$id, '.txt', sep = '')
+    },
+    content = function(file) {
+      write.table(wynik(), file)
+    }
+    
+  )
   
   
 }

@@ -58,16 +58,18 @@ app_ui <- function(request) {
                                                     choices = list("TRUE" = "TRUE", "FALSE" = "FALSE"), selected = "TRUE",
                                                     inline = TRUE),
                                        downloadButton('download_data', 'Pobierz wynik w formacie txt'),
+                                       textInput('id', 'Podaj identyfikator komórki', value = 'x_1'),
+                                       textInput('szczep', 'Podaj nazwę szczepu', value = 'szczep'),
                                        width = 3
                           ),
                           mainPanel(
                             tabsetPanel(type = "tabs", 
-                                        tabPanel("Wykres - wszystkie klatki", plotOutput("wykres", height = 900)
+                                        tabPanel("Wykres - wszystkie klatki", plotOutput("wykres", height = 800)
                                                  #verbatimTextOutput('info'),
                                                  #verbatimTextOutput('test')
                                         ),
-                                        tabPanel("Schemat komórki", plotOutput("strzepka", height = 500)),
-                                        tabPanel("Kymograf", plotOutput("kymograf", height = 500)),
+                                        tabPanel("Schemat komórki", plotOutput("strzepka", height = 700)),
+                                        tabPanel("Kymograf", plotOutput("kymograf", height = 700)),
                                         tabPanel("Wynik", tableOutput("tabela"))),
                             width = 9
                           )
