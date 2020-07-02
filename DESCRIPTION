@@ -7,7 +7,18 @@ License: MIT + file LICENSE
 Imports: 
     config,
     golem,
-    shiny
+    shiny,
+    processx,
+    attempt,
+    DT,
+    glue,
+    htmltools,
+    ggplot2,
+    dplyr,
+    tidyr,
+    modeest
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.0
+Suggests: 
+    testthat
