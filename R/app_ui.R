@@ -59,9 +59,9 @@ app_ui <- function(request) {
                                        radioButtons("odwroc", "Czy początek pomiaru komórki ma być na dole wykresu?", 
                                                     choices = list("TRUE" = "TRUE", "FALSE" = "FALSE"), selected = "TRUE",
                                                     inline = TRUE),
-                                       downloadButton('download_data', 'Pobierz wynik w formacie txt'),
                                        textInput('id', 'Podaj identyfikator komórki', value = 'x_1'),
                                        textInput('szczep', 'Podaj nazwę szczepu', value = 'szczep'),
+                                       downloadButton('download_data', 'Pobierz wynik w formacie txt'),
                                        width = 3
                           ),
                           mainPanel(
