@@ -270,3 +270,46 @@ plot_kymograph_find_peaks <- function(dane_raw, dane_find, odwroc = TRUE, pokaz 
   
   return(p)
 }
+
+
+plot_peaks_ridges <- function(data, scale = 'osobno', gradient = TRUE, skala = 2){
+  
+  dane_raw <- dodaj_ind(data)
+  
+  dane_raw <- dane_raw %>% dplyr::group_by(ind) %>% dplyr::mutate(V3 = rev(V1))
+  
+  if(scale == 'osobno'){
+    
+    dane_raw %>% dplyr::group_by(ind) %>% 
+      dplyr::mutate(V2 = V2- min(V2),
+                    V2 = V2/max(V2)) -> 
+      dane_raw
+  }
+  
+  if(scale == 'razem'){
+    
+    dane_raw %>% dplyr::ungroup() %>%
+      dplyr::mutate(V2 = V2- min(V2),
+                    V2 = V2/max(V2))-> 
+      dane_raw
+  }
+  
+  p <- ggplot2::ggplot(dane_raw, ggplot2::aes(x = V1, y = factor(ind), height = V2, fill = V2))
+  
+  if(gradient == TRUE){
+    p <- p + ggridges::geom_ridgeline_gradient(scale = skala)+
+      ggplot2::scale_fill_viridis_c(direction = -1, guide = 'none')
+  } else {
+    p <- ggplot2::ggplot(dane_raw, ggplot2::aes(x = V1, y = factor(ind), height = V2))
+    p <- p + ggridges::geom_ridgeline(scale = skala, alpha = 0.75)
+      
+  }
+  
+  p <- p + ggridges::theme_ridges()+
+    ggplot2::xlab('Długość komórki')+
+    ggplot2::ylab("Czas")
+  
+  return(p)
+  
+  
+}

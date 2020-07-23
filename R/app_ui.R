@@ -59,6 +59,12 @@ app_ui <- function(request) {
                                        radioButtons("odwroc", "Czy początek pomiaru komórki ma być na dole wykresu?", 
                                                     choices = list("TRUE" = "TRUE", "FALSE" = "FALSE"), selected = "TRUE",
                                                     inline = TRUE),
+                                       radioButtons('norm_ridges', 'Czy do plot_ridges znormalizować każdą komórkę osobno czy wszystkie razem?', 
+                                                    choices = list("osobno", "razem"), inline = TRUE),
+                                       numericInput("ridges_scale", "Podaj skalę do wykresu plot_ridges (Im wyższa tym bardziej linie na siebie zachodzą)",
+                                                    value = 2, min = 1, max = 10, step = 0.5),
+                                       radioButtons("gradient_ridges", "Czy dodać gradient kolorów do plot_ridges?", 
+                                                    choices = list("Tak" = TRUE, "Nie" = FALSE), inline = TRUE),
                                        textInput('id', 'Podaj identyfikator komórki', value = 'x_1'),
                                        textInput('szczep', 'Podaj nazwę szczepu', value = 'szczep'),
                                        downloadButton('download_data', 'Pobierz wynik w formacie txt'),
@@ -72,6 +78,7 @@ app_ui <- function(request) {
                                         ),
                                         tabPanel("Schemat komórki", plotOutput("strzepka", height = 700)),
                                         tabPanel("Kymograf", plotOutput("kymograf", height = 700)),
+                                        tabPanel("Ridges_plot", plotOutput("ridges", height = 700)),
                                         tabPanel("Wynik", tableOutput("tabela"))),
                             width = 9
                           )

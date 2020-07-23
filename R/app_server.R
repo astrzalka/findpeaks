@@ -139,6 +139,21 @@ app_server <- function( input, output, session ) {
     
   })
   
+  plot_ridges <- reactive({
+    
+    dane1 <- dane()
+    
+    p <- plot_peaks_ridges(data = dane1, 
+                           scale = input$norm_ridges,
+                           gradient = input$gradient_ridges,
+                           skala = input$ridges_scale
+                           )
+    
+    return(p)
+  })
+  
+  output$ridges <- renderPlot({plot_ridges()})
+  
   # download hyphae plot
   output$download_data <- downloadHandler(
     
