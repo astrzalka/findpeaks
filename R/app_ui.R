@@ -45,6 +45,7 @@ app_ui <- function(request) {
                             numericInput("lapse", "Podaj wartość time-lapse (min)", 
                                          value = 10),
                             conditionalPanel('input.rodzaj_wykres == "wszystko"',
+                                             uiOutput('filtr_czas'),
                                              textInput('usun', 'Czy chesz usunąć kompleksy? Podaj ich numery id po przecinku', 
                                                        placeholder = 'np. 1, 4')
                             ),

@@ -103,7 +103,13 @@ app_server <- function( input, output, session ) {
     
     wyn <- wynik()
     
-    p <- plot_find_peaks(wyn[[2]], wyn[[1]])
+    dane_2 <- wyn[[2]]
+    dane_1 <- wyn[[1]]
+    
+    dane_2 %>% dplyr::filter(czas >= input$filtr_czas[1], czas <= input$filtr_czas[2]) -> dane_2
+    dane_1 %>% dplyr::filter(czas >= input$filtr_czas[1], czas <= input$filtr_czas[2]) -> dane_1
+    
+    p <- plot_find_peaks(dane_2, dane_1)
     
     #p_ly <- plotly::ggplotly(p)
     print(p)
@@ -168,5 +174,17 @@ app_server <- function( input, output, session ) {
     
   )
   
+  # slider for filtering the plots in all plots
+  
+  output$filtr_czas <- renderUI({
+    
+    dane <- wynik()[[1]]
+    
+    min_czas <- min(dane$czas)
+    max_czas <- max(dane$czas)
+    
+    sliderInput('filtr_czas', 'Podaj zakres czasu - filtrowanie wykresów', min_czas, max_czas, value = c(min_czas, max_czas))
+    
+  })
   
 }
