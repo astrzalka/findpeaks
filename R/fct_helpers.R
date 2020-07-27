@@ -64,8 +64,11 @@ find_peaks <- function (ramka, s = 2, m = FALSE, procent = 1, threshold=10,
   }
   
   # sortuje wyniki najpierw według klatek, potem według odległości od tipa
-  wynik_kon<-dplyr::arrange(wynik_kon, indeks, dist_tip) %>%
-    dplyr::mutate(id = 1:dplyr::n())
+  wynik_kon <- dplyr::arrange(wynik_kon, indeks, dist_tip) %>%
+    dplyr::mutate(id = 1:dplyr::n()) %>% 
+    dplyr::group_by(indeks) %>%
+    dplyr::mutate(dist_pom = dist_tip - dplyr::lag(dist_tip),
+                  n_chrom = dplyr::n())
   # zwraca wynik
   return(list(wynik = wynik_kon, wynik2 = wynik2))
 }
@@ -182,7 +185,7 @@ plot_find_peaks <- function(dane_raw, dane_find){
   
   p <- ggplot2::ggplot(dane_raw)
   p <- p+ggplot2::geom_line(ggplot2::aes(x = x, y = y), color = "red")+
-    ggplot2::facet_wrap(~czas, scales = "free")+
+    ggplot2::facet_wrap(~czas, scales = "free", ncol = 4)+
     ggplot2::geom_line(ggplot2::aes(x = x, y = int))+
     ggplot2::theme_bw()+
     ggplot2::geom_point(data = dane_find, ggplot2::aes(x = dist_tip, y = 1), 
@@ -302,7 +305,7 @@ plot_peaks_ridges <- function(data, scale = 'osobno', gradient = TRUE, skala = 2
   } else {
     p <- ggplot2::ggplot(dane_raw, ggplot2::aes(x = V1, y = factor(ind), height = V2))
     p <- p + ggridges::geom_ridgeline(scale = skala, alpha = 0.75)
-      
+    
   }
   
   p <- p + ggridges::theme_ridges()+

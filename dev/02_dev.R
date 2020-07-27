@@ -19,7 +19,7 @@ usethis::use_package( "ggplot2" )
 usethis::use_package( "dplyr" )
 usethis::use_package( "tidyr" )
 usethis::use_package( "modeest" )
-
+usethis::use_package( "plotly" )
 
 ## Add modules ----
 ## Create a module infrastructure in R/

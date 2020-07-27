@@ -104,6 +104,8 @@ app_server <- function( input, output, session ) {
     wyn <- wynik()
     
     p <- plot_find_peaks(wyn[[2]], wyn[[1]])
+    
+    #p_ly <- plotly::ggplotly(p)
     print(p)
     
   })
