@@ -69,7 +69,7 @@ find_peaks <- function (ramka, s = 2, m = FALSE, procent = 1, threshold=10,
     dplyr::group_by(indeks) %>%
     dplyr::mutate(dist_pom = dist_tip - dplyr::lag(dist_tip),
                   n_chrom = dplyr::n(),
-                  numer_chrom = 1:n_chrom)
+                  numer_chrom = 1:n_chrom[1])
   # zwraca wynik
   return(list(wynik = wynik_kon, wynik2 = wynik2))
 }

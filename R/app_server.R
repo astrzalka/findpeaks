@@ -155,7 +155,7 @@ app_server <- function( input, output, session ) {
                            scale = input$norm_ridges,
                            gradient = input$gradient_ridges,
                            skala = input$ridges_scale
-                           )
+    )
     
     return(p)
   })
@@ -166,7 +166,7 @@ app_server <- function( input, output, session ) {
   output$download_data <- downloadHandler(
     
     filename = function() {
-      paste('wynik', input$id, '.txt', sep = '')
+      paste('wynik', input$id, '_', input$szczep, '.txt', sep = '')
     },
     content = function(file) {
       write.table(wynik()[[1]], file)
@@ -182,8 +182,8 @@ app_server <- function( input, output, session ) {
     dane <- dodaj_ind(dane)
     dane$czas <- dane$ind * input$lapse
     
-    min_czas <- min(dane$czas)
-    max_czas <- max(dane$czas)
+    min_czas <- min(dane$czas)-input$lapse
+    max_czas <- max(dane$czas)-input$lapse
     
     sliderInput('filtr_czas', 'Podaj zakres czasu - filtrowanie wykresów', min_czas, max_czas, value = c(min_czas, max_czas))
     
@@ -255,12 +255,51 @@ app_server <- function( input, output, session ) {
     dane_podsum %>% dplyr::left_join(dane_podsum_2) %>% dplyr::left_join(dane_podsum_3) -> 
       dane_podsum
     
-
+    
     return(dane_podsum)
     
   })
   
   # show table with all data
   output$tabela_podsumowanie <- renderTable(podsumowanie())
+  
+  
+  histogramInput <- reactive({
+    
+    wb <- dane_porownanie()
+    
+    wb %>% dplyr::filter(numer_chrom <= input$n_kompl) -> wb
+    
+    if(input$bin == 0){
+      
+      bin <- mean(wb[,input$os_x_hist], na.rm = TRUE) / 10
+    } else {
+      
+      bin <- input$bin
+    }
+    
+    p <- EDA::draw_histogram(wb = wb,
+                        variable = input$os_x_hist,
+                        facet_draw = input$facet,
+                        facet_var = input$color_hist,
+                        bin = bin,
+                        y_density = input$os_y,
+                        x_name = input$os_x,
+                        y_name = input$os_y_nazwa,
+                        kolory = input$kolory_hist,
+                        viridis = input$viridis_hist,
+                        brewer = input$colorbrewer_hist,
+                        wlasne = input$wlasne_kolory_hist)
+    
+    print(p)
+  })
+  
+  output$wykres_podsumowanie <- renderPlot({
+    if (is.null(input$wyniki))
+      return(NULL)
+    if(input$rodzaj_wykres_summ == 'hist'){
+      print(histogramInput())
+    }
+  })
   
 }

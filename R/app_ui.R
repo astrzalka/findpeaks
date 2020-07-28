@@ -135,10 +135,37 @@ app_ui <- function(request) {
                                                                       'Odległość pomiędzy kompleksami' = 'dist_pom',
                                                                       'Intensywnosć fluorescencji' = 'int_raw')),
                                            selectInput('color_hist', "Kolor",
-                                                       choices = list('Brak' = 'none',
-                                                                      'Szczep' = 'szczep',
+                                                       choices = list('Szczep' = 'szczep',
                                                                       'Kompleks' = 'numer_chrom',
                                                                       'Komórka' = 'komorka'))
+                          ),
+                          conditionalPanel(condition = 'input.rodzaj_wykres_summ == "hist"',
+                                           numericInput("bin", "Szerokość słupków", value=0, step = 0.1),
+                                           radioButtons("facet", "Czy podzielić na panele?", choices = list("Tak" = TRUE, "Nie" = FALSE), selected = TRUE, inline = TRUE),
+                                           radioButtons("os_y", "Oś Y?", choices = list("count" = 1, "density" = 2), selected = 1, inline = TRUE),
+                                           radioButtons('kolory_hist', 'Jaką skalę kolorów zastosować?', c('domyślna', 'colorbrewer', 'viridis', 'odcienie szarości', 'własna :)'),
+                                                        selected = 'domyślna', inline = TRUE),
+                                           conditionalPanel(
+                                             condition = "input.kolory_hist == 'colorbrewer'",
+                                             selectInput('colorbrewer_hist', label = 'Którą skalę Colorbrewer zastosować?',
+                                                         choices = c('Set1', 'Set2', 'Set3', 'Pastel1', 'Pastel2', 'Paired', 'Dark2', 'Accent'),
+                                                         selected = 'Set1', multiple = FALSE)
+                                           ),
+                                           conditionalPanel(
+                                             condition = "input.kolory_hist == 'viridis'",
+                                             selectInput('viridis_hist', label = 'Którą skalę viridis zastosować?',
+                                                         choices = c('viridis', 'magma', 'plasma', 'inferno', 'cividis'),
+                                                         selected = 'viridis', multiple = FALSE)
+                                           ),
+                                           conditionalPanel(
+                                             condition = "input.kolory_hist == 'własna :)'",
+                                             textInput('wlasne_kolory_hist', 'Tutaj wpisz wybrane nazwy kolorów oddzielając je przecinkiem. Powinny być to kolory 
+                                          predefiniowane w R (można sprawdzić jakie np. na stronie 
+                                          http://sape.inf.usi.ch/quick-reference/ggplot2/colour) albo skorzystać 
+                                          z notacji #FF0000')
+                                           ),
+                                           textInput('os_x', 'Nazwa osi X', 'Wartość'),
+                                           textInput('os_y_nazwa', 'Nazwa osi Y', 'Liczba')
                           ),
                           conditionalPanel(condition = 'input.rodzaj_wykres_summ == "box"',
                                            selectInput('os_x_box', 'Wybierz oś X',
@@ -149,9 +176,9 @@ app_ui <- function(request) {
                                                        choices = list('Odległość od tipa' = 'dist_tip',
                                                                       'Odległość pomiędzy kompleksami' = 'dist_pom',
                                                                       'Intensywnosć fluorescencji' = 'int_raw'))
-                                           ),
+                          ),
                           conditionalPanel(condition = 'input.rodzaj_wykres_summ == "scatter"'
-                                           )
+                          )
                         ),
                         mainPanel(
                           tabsetPanel(
@@ -162,7 +189,7 @@ app_ui <- function(request) {
                                      tableOutput("tabela_podsumowanie")
                             ),
                             tabPanel("Wykresy",
-                                     #plotOutput('wykres_podsumowanie', height = "800px")
+                                     plotOutput('wykres_podsumowanie', height = "800px")
                             )
                           )
                         )
