@@ -169,16 +169,18 @@ app_server <- function( input, output, session ) {
       paste('wynik', input$id, '.txt', sep = '')
     },
     content = function(file) {
-      write.table(wynik(), file)
+      write.table(wynik()[[1]], file)
     }
     
   )
   
   # slider for filtering the plots in all plots
-  
+  # takes time from raw data, otherwise ot will update every time the wynik is changed
   output$filtr_czas <- renderUI({
     
-    dane <- wynik()[[1]]
+    dane <- dane()
+    dane <- dodaj_ind(dane)
+    dane$czas <- dane$ind * input$lapse
     
     min_czas <- min(dane$czas)
     max_czas <- max(dane$czas)
@@ -186,5 +188,79 @@ app_server <- function( input, output, session ) {
     sliderInput('filtr_czas', 'Podaj zakres czasu - filtrowanie wykresów', min_czas, max_czas, value = c(min_czas, max_czas))
     
   })
+  
+  #### Code for analysis of multiple hyphae/strains
+  
+  
+  # load multiple files into shiny using data.table and lapply
+  dane_porownanie <-reactive({
+    data.table::rbindlist(lapply(input$wyniki$datapath, read.table),
+                          use.names = TRUE, fill = TRUE)
+  })
+  
+  output$tabela_wyniki <- renderTable(dane_porownanie())
+  
+  
+  # create summary table for all data
+  podsumowanie <- reactive({
+    
+    dane <- dane_porownanie()
+    
+    dane %>% dplyr::filter(numer_chrom <= input$n_kompl) -> dane
+    
+    if(input$summ_type == 'szczep'){
+      
+      dane %>%
+        dplyr::group_by(szczep) -> dane
+      
+      dane %>% dplyr::group_by(szczep, komorka) %>%
+        dplyr::summarise(dlugosc = max(dlug),
+                         czas = max(czas)) %>%
+        dplyr::group_by(szczep) %>%
+        dplyr::summarise(max_dlugosc = mean(dlugosc),
+                         max_czas = mean(czas)) -> dane_podsum_3
+      
+    } else if(input$summ_type == 'hyphae'){
+      
+      dane %>%
+        dplyr::group_by(szczep, komorka) -> dane
+      
+      dane %>% dplyr::group_by(szczep, komorka) %>%
+        dplyr::summarise(max_dlugosc = max(dlug),
+                         max_czas = max(czas)) -> dane_podsum_3 
+    } else if(input$summ_type == 'komp'){
+      
+      dane %>% dplyr::group_by(szczep, numer_chrom) -> dane
+      
+      dane %>% dplyr::group_by(szczep, komorka) %>%
+        dplyr::summarise(dlugosc = max(dlug),
+                         czas = max(czas)) %>%
+        dplyr::group_by(szczep) %>%
+        dplyr::summarise(max_dlugosc = mean(dlugosc),
+                         max_czas = mean(czas)) -> dane_podsum_3
+      
+    }
+    
+    dane %>% dplyr::summarise(mean_dist_tip = mean(dist_tip),
+                              sd_dist_tip = sd(dist_tip),
+                              # mean_dist_base = mean(dist_base),
+                              # sd_dist_base = sd(dist_base),
+                              mean_dist_pom = mean(dist_pom, na.rm = TRUE),
+                              sd_dist_pom = sd(dist_pom, na.rm = TRUE),
+                              n = dplyr::n()) -> dane_podsum
+    
+    dane %>% dplyr::distinct(szczep, komorka, indeks, .keep_all = TRUE) %>%
+      dplyr::summarise(mean_n_chrom = mean(n_chrom)) -> dane_podsum_2
+    
+    dane_podsum %>% dplyr::left_join(dane_podsum_2) %>% dplyr::left_join(dane_podsum_3) -> 
+      dane_podsum
+    
+
+    return(dane_podsum)
+    
+  })
+  
+  # show table with all data
+  output$tabela_podsumowanie <- renderTable(podsumowanie())
   
 }

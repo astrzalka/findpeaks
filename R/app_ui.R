@@ -54,7 +54,7 @@ app_ui <- function(request) {
                             conditionalPanel('input.rodzaj_wykres == "schemat" |
                                                         input.rodzaj_wykres == "kymograf"',
                                              radioButtons("odwroc", "Czy początek pomiaru komórki ma być na dole wykresu?", 
-                                                          choices = list("TRUE" = "TRUE", "FALSE" = "FALSE"), selected = "TRUE",
+                                                          choices = list("TRUE" = "TRUE", "FALSE" = "FALSE"), selected = "FALSE",
                                                           inline = TRUE),
                                              selectInput("punkt", "Wybierz kolor punktów",
                                                          choices = list(czerwony = "red", 
@@ -113,6 +113,60 @@ app_ui <- function(request) {
                         
                         
                         
+               ),
+               tabPanel("Porównanie szczepów",
+                        sidebarLayout(sidebarPanel(
+                          fileInput('wyniki', 'Wczytaj pliki txt z wynikami', multiple = TRUE),
+                          radioButtons('summ_type', 'Jakie podsumowanie pokazać?', 
+                                       choices = list('Szczepy' = 'szczep',
+                                                      "Szczepy i komórki" = 'hyphae',
+                                                      "szczepy i kompleksy" = 'komp')),
+                          numericInput('n_kompl', "Ile maksymalnie kompleksów uzwględnić w analizach?",
+                                       value = 1),
+                          selectInput('rodzaj_wykres_summ', 'Wybierz rodzaj wykresu',
+                                      choices = list('Histogram' = 'hist',
+                                                     "Wykres gęstości" = 'density',
+                                                     'Boxplot' = 'box',
+                                                     'Scatterplot' = 'scatter'
+                                      )),
+                          conditionalPanel(condition = 'input.rodzaj_wykres_summ == "hist" | input.rodzaj_wykres_summ == "density"',
+                                           selectInput('os_x_hist', 'Wybierz zmienną do analizy',
+                                                       choices = list('Odległość od tipa' = 'dist_tip',
+                                                                      'Odległość pomiędzy kompleksami' = 'dist_pom',
+                                                                      'Intensywnosć fluorescencji' = 'int_raw')),
+                                           selectInput('color_hist', "Kolor",
+                                                       choices = list('Brak' = 'none',
+                                                                      'Szczep' = 'szczep',
+                                                                      'Kompleks' = 'numer_chrom',
+                                                                      'Komórka' = 'komorka'))
+                          ),
+                          conditionalPanel(condition = 'input.rodzaj_wykres_summ == "box"',
+                                           selectInput('os_x_box', 'Wybierz oś X',
+                                                       choices = list('Szczep' = 'szczep',
+                                                                      'Kompleks' = 'numer_chrom',
+                                                                      'Czas' = 'czas')),
+                                           selectInput('os_Y_box', 'Wybierz oś Y',
+                                                       choices = list('Odległość od tipa' = 'dist_tip',
+                                                                      'Odległość pomiędzy kompleksami' = 'dist_pom',
+                                                                      'Intensywnosć fluorescencji' = 'int_raw'))
+                                           ),
+                          conditionalPanel(condition = 'input.rodzaj_wykres_summ == "scatter"'
+                                           )
+                        ),
+                        mainPanel(
+                          tabsetPanel(
+                            tabPanel("Dane",
+                                     tableOutput("tabela_wyniki")
+                            ),
+                            tabPanel("Podsumowanie",
+                                     tableOutput("tabela_podsumowanie")
+                            ),
+                            tabPanel("Wykresy",
+                                     #plotOutput('wykres_podsumowanie', height = "800px")
+                            )
+                          )
+                        )
+                        )
                )
                
     )
