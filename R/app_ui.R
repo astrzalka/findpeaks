@@ -167,15 +167,91 @@ app_ui <- function(request) {
                                            textInput('os_x', 'Nazwa osi X', 'Wartość'),
                                            textInput('os_y_nazwa', 'Nazwa osi Y', 'Liczba')
                           ),
+                          conditionalPanel(condition = 'input.rodzaj_wykres_summ == "density"',
+                                           radioButtons('fill_dens', 'Czy dodać wypełnienie?', 
+                                                        choices = list("Tak" = "TRUE", "Nie" = "FALSE"), 
+                                                        selected = "FALSE", inline = TRUE),
+                                           radioButtons('kolory_dens', 'Jaką skalę kolorów zastosować?', c('domyślna', 'colorbrewer', 'viridis', 'odcienie szarości', 'własna :)'),
+                                                        selected = 'domyślna', inline = TRUE),
+                                           conditionalPanel(
+                                             condition = "input.kolory_dens == 'colorbrewer'",
+                                             selectInput('colorbrewer_dens', label = 'Którą skalę Colorbrewer zastosować?',
+                                                         choices = c('Set1', 'Set2', 'Set3', 'Pastel1', 'Pastel2', 'Paired', 'Dark2', 'Accent'),
+                                                         selected = 'Set1', multiple = FALSE)
+                                           ),
+                                           conditionalPanel(
+                                             condition = "input.kolory_dens == 'viridis'",
+                                             selectInput('viridis_dens', label = 'Którą skalę viridis zastosować?',
+                                                         choices = c('viridis', 'magma', 'plasma', 'inferno', 'cividis'),
+                                                         selected = 'viridis', multiple = FALSE)
+                                           ),
+                                           conditionalPanel(
+                                             condition = "input.kolory_dens == 'własna :)'",
+                                             textInput('wlasne_kolory_dens', 'Tutaj wpisz wybrane nazwy kolorów oddzielając je przecinkiem. Powinny być to kolory 
+                                          predefiniowane w R (można sprawdzić jakie np. na stronie 
+                                          http://sape.inf.usi.ch/quick-reference/ggplot2/colour) albo skorzystać 
+                                          z notacji #FF0000')
+                                           ),
+                                           textInput('os_x_dens', 'Nazwa osi X', 'Wartość'),
+                                           textInput('os_y_dens', 'Nazwa osi Y', 'Liczba')
+                          ),
                           conditionalPanel(condition = 'input.rodzaj_wykres_summ == "box"',
                                            selectInput('os_x_box', 'Wybierz oś X',
                                                        choices = list('Szczep' = 'szczep',
                                                                       'Kompleks' = 'numer_chrom',
                                                                       'Czas' = 'czas')),
-                                           selectInput('os_Y_box', 'Wybierz oś Y',
+                                           selectInput('os_y_box', 'Wybierz oś Y',
                                                        choices = list('Odległość od tipa' = 'dist_tip',
                                                                       'Odległość pomiędzy kompleksami' = 'dist_pom',
-                                                                      'Intensywnosć fluorescencji' = 'int_raw'))
+                                                                      'Intensywnosć fluorescencji' = 'int_raw')),
+                                           radioButtons('boxviolin', 'Jaki wykres narysować?', 
+                                                        c('Boxplot' = 'Boxplot', 'Violin' = 'Violin', 'Średnia z przedziałem ufności' = 'mean_ci'), 
+                                                        inline = TRUE),
+                                           radioButtons('porownanie', 'Jakie chcesz wykonać porównanie', 
+                                                        list('brak' = 'brak', 'Tylko wobec kontroli' = 'kontrola', 
+                                                             'Pomiędzy niektórymi grupami (podaj niżej)' = 'grupy')),
+                                           conditionalPanel(condition = 'input.porownanie == "kontrola"',
+                                                            numericInput('kontrola', 'Która grupa to kontrola?', 1, min = 1)
+                                           ),
+                                           conditionalPanel(condition = 'input.porownanie == "grupy"',
+                                                            textInput('porownania', 'Tutaj wpisz grupy do porównania w formacie:
+                                          Typ_A Typ_B;Typ_A Typ_C')
+                                           ),
+                                           radioButtons('punkty', 'Czy dodać wszystkie obserwacje?', 
+                                                        c('Nie' = 'none', 'Tak (beeswarm)' = 'beeswarm', 
+                                                          'Tak (quasirandom)' = 'quasirandom'), 
+                                                        inline = TRUE),
+                                           conditionalPanel(condition ='input.porownanie != "brak"' ,
+                                                            radioButtons('rodzaj_test', 'Jaki test zastosować?', 
+                                                                         c('t.test' = 't.test', 'wilcoxon' = 'wilcox.test'), inline = TRUE),
+                                                            radioButtons('p_format', 'Jak pokazać wartość p?', c('Liczbowo' = 'p.adj', 'Gwiazdki' = 'p.signif'), inline = TRUE)
+                                           ),
+                                           radioButtons('anova', 'Czy dodać wynik Anova lub Kruskal Wallis test?', 
+                                                        c('Nie' = 'nie','Anova' = 'anova', 'Kruskal Wallis' = 'kruskal.test'), 
+                                                        selected = 'nie', inline = TRUE),
+                                           radioButtons('kolory', 'Jaką skalę kolorów zastosować?', c('domyślna', 'colorbrewer', 'viridis', 'odcienie szarości', 'własna :)'),
+                                                        selected = 'domyślna', inline = TRUE),
+                                           conditionalPanel(
+                                             condition = "input.kolory == 'colorbrewer'",
+                                             selectInput('colorbrewer', label = 'Którą skalę Colorbrewer zastosować?',
+                                                         choices = c('Set1', 'Set2', 'Set3', 'Pastel1', 'Pastel2', 'Paired', 'Dark2', 'Accent'),
+                                                         selected = 'Set1', multiple = FALSE)
+                                           ),
+                                           conditionalPanel(
+                                             condition = "input.kolory == 'viridis'",
+                                             selectInput('viridis', label = 'Którą skalę viridis zastosować?',
+                                                         choices = c('viridis', 'magma', 'plasma', 'inferno', 'cividis'),
+                                                         selected = 'viridis', multiple = FALSE)
+                                           ),
+                                           conditionalPanel(
+                                             condition = "input.kolory == 'własna :)'",
+                                             textInput('wlasne_kolory', 'Tutaj wpisz wybrane nazwy kolorów oddzielając je przecinkiem. Powinny być to kolory 
+                                          predefiniowane w R (można sprawdzić jakie np. na stronie 
+                                          http://sape.inf.usi.ch/quick-reference/ggplot2/colour) albo skorzystać 
+                                          z notacji #FF0000')
+                                           ),
+                                           textInput('os_x_box', 'Nazwa osi X', 'Wartość'),
+                                           textInput('os_y_box', 'Nazwa osi Y', 'Liczba')
                           ),
                           conditionalPanel(condition = 'input.rodzaj_wykres_summ == "scatter"'
                           )

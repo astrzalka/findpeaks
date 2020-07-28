@@ -18,7 +18,14 @@ Imports:
     tidyr,
     modeest,
     pkgload,
-    plotly
+    plotly,
+    ggpubr,
+    stringr,
+    ggbeeswarm,
+    shinythemes,
+    magrittr,
+    Hmisc,
+    EDA
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1

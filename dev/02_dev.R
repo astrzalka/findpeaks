@@ -19,7 +19,14 @@ usethis::use_package( "ggplot2" )
 usethis::use_package( "dplyr" )
 usethis::use_package( "tidyr" )
 usethis::use_package( "modeest" )
-usethis::use_package( "plotly" )
+usethis::use_package( "ggpubr" )
+usethis::use_package( "stringr" )
+usethis::use_package( "ggbeeswarm" )
+usethis::use_package( "shinythemes" )
+usethis::use_package( "magrittr" )
+usethis::use_package( "Hmisc" )
+usethis::use_package( "EDA" )
+
 
 ## Add modules ----
 ## Create a module infrastructure in R/

@@ -3,6 +3,7 @@
 #' @param input,output,session Internal parameters for {shiny}. 
 #'     DO NOT REMOVE.
 #' @import shiny
+#' @import ggpubr
 #' @noRd
 app_server <- function( input, output, session ) {
   # List the first level callModules here
@@ -279,19 +280,68 @@ app_server <- function( input, output, session ) {
     }
     
     p <- EDA::draw_histogram(wb = wb,
-                        variable = input$os_x_hist,
-                        facet_draw = input$facet,
-                        facet_var = input$color_hist,
-                        bin = bin,
-                        y_density = input$os_y,
-                        x_name = input$os_x,
-                        y_name = input$os_y_nazwa,
-                        kolory = input$kolory_hist,
-                        viridis = input$viridis_hist,
-                        brewer = input$colorbrewer_hist,
-                        wlasne = input$wlasne_kolory_hist)
+                             variable = input$os_x_hist,
+                             facet_draw = input$facet,
+                             facet_var = input$color_hist,
+                             bin = bin,
+                             y_density = input$os_y,
+                             x_name = input$os_x,
+                             y_name = input$os_y_nazwa,
+                             kolory = input$kolory_hist,
+                             viridis = input$viridis_hist,
+                             brewer = input$colorbrewer_hist,
+                             wlasne = input$wlasne_kolory_hist)
     
     print(p)
+  })
+  
+  densityInput <- reactive({
+    wb <- dane_porownanie()
+    
+    wb %>% dplyr::filter(numer_chrom <= input$n_kompl) -> wb
+    
+    p <- EDA::draw_density(wb = wb,
+                           variable = input$os_x_hist,
+                           color_var = input$color_hist,
+                           fill = input$fill_dens,
+                           x_name = input$os_x_dens,
+                           y_name = input$os_y_dens,
+                           kolory = input$kolory_dens,
+                           viridis = input$viridis_dens,
+                           brewer = input$colorbrewer_dens,
+                           wlasne = input$wlasne_kolory_dens)
+    
+    print(p)
+    
+  })
+  
+  boxplotInput <- reactive({
+    
+    wb <- dane_porownanie()
+    
+    wb %>% dplyr::filter(numer_chrom <= input$n_kompl) -> wb
+    wb <- as.data.frame(wb)
+    
+    p <- EDA::draw_boxplot(wb = wb,
+                           x_var = input$os_x_box,
+                           y_var = input$os_y_box,
+                           type = input$boxviolin,
+                           p_format = input$p_format,
+                           porownanie = input$porownanie,
+                           punkty = input$punkty,
+                           anova = input$anova,
+                           test_type = input$rodzaj_test,
+                           kontrola = input$kontrola,
+                           grupy_porownania = input$porownania,
+                           x_name = input$os_x_box,
+                           y_name = input$os_y_box,
+                           kolory = input$kolory,
+                           viridis = input$viridis,
+                           brewer = input$colorbrewer,
+                           wlasne = input$wlasne)
+    
+    return(p)
+    
   })
   
   output$wykres_podsumowanie <- renderPlot({
@@ -299,6 +349,10 @@ app_server <- function( input, output, session ) {
       return(NULL)
     if(input$rodzaj_wykres_summ == 'hist'){
       print(histogramInput())
+    } else if(input$rodzaj_wykres_summ == 'density'){
+      print(densityInput())
+    } else if(input$rodzaj_wykres_summ == 'box'){
+      print(boxplotInput())
     }
   })
   
