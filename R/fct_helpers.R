@@ -68,7 +68,8 @@ find_peaks <- function (ramka, s = 2, m = FALSE, procent = 1, threshold=10,
     dplyr::mutate(id = 1:dplyr::n()) %>% 
     dplyr::group_by(indeks) %>%
     dplyr::mutate(dist_pom = dist_tip - dplyr::lag(dist_tip),
-                  n_chrom = dplyr::n())
+                  n_chrom = dplyr::n(),
+                  numer_chrom = 1:n_chrom)
   # zwraca wynik
   return(list(wynik = wynik_kon, wynik2 = wynik2))
 }
@@ -251,17 +252,17 @@ plot_kymograph_find_peaks <- function(dane_raw, dane_find, odwroc = TRUE, pokaz 
   p <- ggplot2::ggplot(dane_raw)
   
   if(as.logical(odwroc == TRUE)){
-    p <- p + ggplot2::geom_tile(ggplot2::aes(x = (lapse + ind*lapse), y = V1, fill = V2))
+    p <- p + ggplot2::geom_tile(ggplot2::aes(x = (ind*lapse), y = V1, fill = V2))
   } else {
-    p <- p + ggplot2::geom_tile(ggplot2::aes(x = (lapse + ind*lapse), y = V3, fill = V2)) 
+    p <- p + ggplot2::geom_tile(ggplot2::aes(x = (ind*lapse), y = V3, fill = V2)) 
   }
   
   if(as.logical(pokaz) == TRUE){
     if(as.logical(odwroc == TRUE)){
-      p <- p + ggplot2::geom_point(data = dane_find, ggplot2::aes(x = (lapse + indeks*lapse), y = dist_tip), 
+      p <- p + ggplot2::geom_point(data = dane_find, ggplot2::aes(x = (indeks*lapse), y = dist_tip), 
                                    color = color_point, size = 3)
     } else {
-      p <- p + ggplot2::geom_point(data = dane_find, ggplot2::aes(x = (lapse + indeks*lapse), y = dist_base), 
+      p <- p + ggplot2::geom_point(data = dane_find, ggplot2::aes(x = (indeks*lapse), y = dist_base), 
                                    color = color_point, size = 3)
     }
   }
