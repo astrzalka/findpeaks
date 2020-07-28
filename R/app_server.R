@@ -93,6 +93,13 @@ app_server <- function( input, output, session ) {
     x[[1]] <- subset(x[[1]], !(id %in% usun_kompleksy))
     x[[1]]$parametry <- paste(input$sigma, input$procent, input$threshold, input$markov,
                               input$usun, sep = '_')
+    
+    x[[1]] %>% dplyr::arrange(czas, dist_tip) %>%
+      dplyr::group_by(czas) %>%
+      dplyr::mutate(dist_pom = dist_tip - dplyr::lag(dist_tip),
+                    n_chrom = dplyr::n(),
+                    numer_chrom = 1:dplyr::n()) -> x[[1]]
+    
     return(x)
     
   })

@@ -65,11 +65,7 @@ find_peaks <- function (ramka, s = 2, m = FALSE, procent = 1, threshold=10,
   
   # sortuje wyniki najpierw według klatek, potem według odległości od tipa
   wynik_kon <- dplyr::arrange(wynik_kon, indeks, dist_tip) %>%
-    dplyr::mutate(id = 1:dplyr::n()) %>% 
-    dplyr::group_by(indeks) %>%
-    dplyr::mutate(dist_pom = dist_tip - dplyr::lag(dist_tip),
-                  n_chrom = dplyr::n(),
-                  numer_chrom = 1:n_chrom[1])
+    dplyr::mutate(id = 1:dplyr::n()) 
   # zwraca wynik
   return(list(wynik = wynik_kon, wynik2 = wynik2))
 }
