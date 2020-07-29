@@ -247,10 +247,23 @@ plot_kymograph_find_peaks <- function(dane_raw, dane_find, odwroc = TRUE, pokaz 
   
   p <- ggplot2::ggplot(dane_raw)
   
+  x_shift <- lapse/2
+  y_shift <- (dane_raw$V1[2] - dane_raw$V1[1])/2
+  
   if(as.logical(odwroc == TRUE)){
-    p <- p + ggplot2::geom_tile(ggplot2::aes(x = (ind*lapse), y = V1, fill = V2))
+    #p <- p + ggplot2::geom_tile(ggplot2::aes(x = (ind*lapse), y = V1, fill = V2))
+    p <- p + ggplot2::geom_rect(ggplot2::aes(xmin = (ind*lapse) - x_shift,
+                                             xmax = (ind*lapse) + x_shift,
+                                             ymin = V1 - y_shift,
+                                             ymax = V1 + y_shift,
+                                             fill = V2))
   } else {
-    p <- p + ggplot2::geom_tile(ggplot2::aes(x = (ind*lapse), y = V3, fill = V2)) 
+    #p <- p + ggplot2::geom_tile(ggplot2::aes(x = (ind*lapse), y = V3, fill = V2)) 
+    p <- p + ggplot2::geom_rect(ggplot2::aes(xmin = (ind*lapse) - x_shift,
+                                             xmax = (ind*lapse) + x_shift,
+                                             ymin = V3 - y_shift,
+                                             ymax = V3 + y_shift,
+                                             fill = V2))
   }
   
   if(as.logical(pokaz) == TRUE){
