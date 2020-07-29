@@ -162,7 +162,8 @@ app_server <- function( input, output, session ) {
     p <- plot_peaks_ridges(data = dane1, 
                            scale = input$norm_ridges,
                            gradient = input$gradient_ridges,
-                           skala = input$ridges_scale
+                           skala = input$ridges_scale,
+                           reverse = as.logical(input$odwroc)
     )
     
     return(p)

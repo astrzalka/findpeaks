@@ -285,12 +285,26 @@ plot_kymograph_find_peaks <- function(dane_raw, dane_find, odwroc = TRUE, pokaz 
 }
 
 
-plot_peaks_ridges <- function(data, scale = 'osobno', gradient = TRUE, skala = 2){
+#' Title
+#'
+#'Uses geom_ridgeline to plot all fluorescence profiles on one plot
+#'
+#' @param data raw fluorescence plots data
+#' @param scale should data be normalized for each plot individually
+#' @param gradient plot color gradient? (scale viridis)
+#' @param skala passed to geom_ridgeline - how scale plots (1 do not overplot)
+#' @param reverse should plot be reversed (is 0 the tip or the bottom of the hyphae?)
+#'
+#' @return ggplot
+#'
+#' @examples
+plot_peaks_ridges <- function(data, scale = 'osobno', gradient = TRUE, skala = 2, reverse = FALSE){
   
   dane_raw <- dodaj_ind(data)
   
-  dane_raw <- dane_raw %>% dplyr::group_by(ind) %>% dplyr::mutate(V3 = rev(V1))
-  
+  if(reverse == FALSE){
+    dane_raw <- dane_raw %>% dplyr::group_by(ind) %>% dplyr::mutate(V1 = rev(V1))
+  }
   if(scale == 'osobno'){
     
     dane_raw %>% dplyr::group_by(ind) %>% 
@@ -306,6 +320,7 @@ plot_peaks_ridges <- function(data, scale = 'osobno', gradient = TRUE, skala = 2
                     V2 = V2/max(V2))-> 
       dane_raw
   }
+  
   
   p <- ggplot2::ggplot(dane_raw, ggplot2::aes(x = V1, y = factor(ind), height = V2, fill = V2))
   

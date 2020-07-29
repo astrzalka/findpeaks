@@ -52,10 +52,14 @@ app_ui <- function(request) {
                             # radioButtons("akcja", "Wybierz akcję?", choices = list("Nic" = "nic", "Dodaj punkt" = "dodaj", "Usuń punkt" = 'usun'), selected = "nic"),
                             # actionButton("dodaj", label = "Dodaj punkt"),
                             conditionalPanel('input.rodzaj_wykres == "schemat" |
-                                                        input.rodzaj_wykres == "kymograf"',
+                                                        input.rodzaj_wykres == "kymograf" |
+                                             input.rodzaj_wykres == "ridges"',
                                              radioButtons("odwroc", "Czy początek pomiaru komórki ma być na dole wykresu?", 
                                                           choices = list("TRUE" = "TRUE", "FALSE" = "FALSE"), selected = "FALSE",
-                                                          inline = TRUE),
+                                                          inline = TRUE)
+                                             ),
+                            conditionalPanel('input.rodzaj_wykres == "schemat" |
+                                                        input.rodzaj_wykres == "kymograf"',
                                              selectInput("punkt", "Wybierz kolor punktów",
                                                          choices = list(czerwony = "red", 
                                                                         zielony = "green3", 
