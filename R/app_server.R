@@ -395,4 +395,23 @@ app_server <- function( input, output, session ) {
     }
   })
   
+  dane_download <- reactive({
+    wb <- dane_porownanie()
+    wb %>% dplyr::filter(numer_chrom <= input$n_kompl) -> wb
+    return(wb)
+  })
+  
+  
+  # download data from second tab - bound together from many files
+  output$download_data_all <- downloadHandler(
+    
+    filename = function() {
+      paste('wyniki_all', '.txt', sep = '')
+    },
+    content = function(file) {
+      write.table(dane_download(), file)
+    }
+    
+  )
+  
 }

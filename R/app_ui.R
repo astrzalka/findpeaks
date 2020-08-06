@@ -127,6 +127,7 @@ app_ui <- function(request) {
                                                       "szczepy i kompleksy" = 'komp')),
                           numericInput('n_kompl', "Ile maksymalnie kompleksów uzwględnić w analizach?",
                                        value = 1),
+                          downloadButton('download_data_all', 'Pobierz zebrane dane w formacie txt'),
                           selectInput('rodzaj_wykres_summ', 'Wybierz rodzaj wykresu',
                                       choices = list('Histogram' = 'hist',
                                                      "Wykres gęstości" = 'density',
