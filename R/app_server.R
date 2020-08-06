@@ -414,4 +414,27 @@ app_server <- function( input, output, session ) {
     
   )
   
+  getactiveplot <- reactive({
+    
+    if(input$rodzaj_wykres_summ == 'hist'){
+      return(histogramInput())
+    } else if(input$rodzaj_wykres_summ == 'density'){
+      return(densityInput())
+    } else if(input$rodzaj_wykres_summ == 'box'){
+      return(boxplotInput())
+    } else if(input$rodzaj_wykres_summ == 'scatter'){
+      return(scatterInput())
+    }
+    
+    
+  })
+  
+  output$download_plot <- downloadHandler(
+    filename = function() { paste(input$dataset, '.png', sep='') },
+    content = function(file) {
+      png(file, res = input$res_plot, width = input$width_plot, input$height_plot, unit = 'cm')
+      print(getactiveplot())
+      dev.off()
+    })
+  
 }

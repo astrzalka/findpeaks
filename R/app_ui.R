@@ -342,16 +342,21 @@ app_ui <- function(request) {
                                              numericInput('size_trend', "Podaj grubość lilnii trendu",
                                                           value = 1, step = 0.5, min = 0)
                                            )
-                                           #,
-                                           # radioButtons('corr', 'Czy policzyć korelację?',
-                                           #              choices = list('Nie' = 'nie', 
-                                           #                             'Tak (pearson)' = 'pearson',
-                                           #                             'Tak (spearman)' = 'spearman'
-                                           #              ))
-                                           
-                                           
-                                           
-                          )
+                          ),
+                          downloadButton('download_plot', 'Pobierz wykres (dodaj .png do nazwy pliku)'),
+                          numericInput('width_plot', 'Szerokość obrazka [cm]', 20, min = 5, max = 25),
+                          numericInput('height_plot', 'Wysokość obrazka [cm]', 14, min = 5, max = 25),
+                          numericInput('res_plot', 'Rozdzielczość', 200, min = 100, max = 500)
+                          #,
+                          # radioButtons('corr', 'Czy policzyć korelację?',
+                          #              choices = list('Nie' = 'nie', 
+                          #                             'Tak (pearson)' = 'pearson',
+                          #                             'Tak (spearman)' = 'spearman'
+                          #              ))
+                          
+                          
+                          
+                          
                         ),
                         mainPanel(
                           tabsetPanel(
