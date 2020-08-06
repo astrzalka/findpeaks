@@ -57,7 +57,7 @@ app_ui <- function(request) {
                                              radioButtons("odwroc", "Czy początek pomiaru komórki ma być na dole wykresu?", 
                                                           choices = list("TRUE" = "TRUE", "FALSE" = "FALSE"), selected = "FALSE",
                                                           inline = TRUE)
-                                             ),
+                            ),
                             conditionalPanel('input.rodzaj_wykres == "schemat" |
                                                         input.rodzaj_wykres == "kymograf"',
                                              selectInput("punkt", "Wybierz kolor punktów",
@@ -257,7 +257,91 @@ app_ui <- function(request) {
                                            textInput('os_x_box', 'Nazwa osi X', 'Wartość'),
                                            textInput('os_y_box', 'Nazwa osi Y', 'Liczba')
                           ),
-                          conditionalPanel(condition = 'input.rodzaj_wykres_summ == "scatter"'
+                          conditionalPanel(condition = 'input.rodzaj_wykres_summ == "scatter"',
+                                           selectInput('os_x_scatter', 'Wybierz oś X',
+                                                       choices = list('Czas' = 'czas',
+                                                                      "Długość" = 'dlug',
+                                                                      "Odległość od tipa" = 'dist_tip',
+                                                                      "Odległość od podstawy" = 'dist_base',
+                                                                      "Odległość pomiędzy" = 'dist_pom',
+                                                                      "Intensywność fluorescencji" = 'int_raw',
+                                                                      "Liczba kompleksów" = 'n_chrom',
+                                                                      'Kompleks' = 'numer_chrom')),
+                                           selectInput('os_y_scatter', 'Wybierz oś Y',
+                                                       choices = list('Czas' = 'czas',
+                                                                      "Długość" = 'dlug',
+                                                                      "Odległość od tipa" = 'dist_tip',
+                                                                      "Odległość od podstawy" = 'dist_base',
+                                                                      "Odległość pomiędzy" = 'dist_pom',
+                                                                      "Intensywność fluorescencji" = 'int_raw',
+                                                                      "Liczba kompleksów" = 'n_chrom',
+                                                                      'Kompleks' = 'numer_chrom'),
+                                                       selected = 'dist_tip'),
+                                           selectInput('os_color_scatter', 'Pokoloruj według',
+                                                       choices = list("brak" = 'brak',
+                                                                      "Szczep" = 'szczep',
+                                                                      "Komórka" = 'komorka',
+                                                                      'Czas' = 'czas',
+                                                                      "Długość" = 'dlug',
+                                                                      "Odległość od tipa" = 'dist_tip',
+                                                                      "Odległość od podstawy" = 'dist_base',
+                                                                      "Odległość pomiędzy" = 'dist_pom',
+                                                                      "Intensywność fluorescencji" = 'int_raw',
+                                                                      "Liczba kompleksów" = 'n_chrom',
+                                                                      'Kompleks' = 'numer_chrom')),
+                                           selectInput('os_facet_scatter', 'Podziel na panele według',
+                                                       choices = list("brak" = 'brak',
+                                                                      "Szczep" = 'szczep',
+                                                                      "Komórka" = 'komorka',
+                                                                      "Liczba kompleksów" = 'n_chrom',
+                                                                      'Kompleks' = 'numer_chrom')),
+                                           sliderInput("alpha_point", "Podaj wartość alpha", min = 0, max = 1, value = 1, step = 0.1),
+                                           sliderInput("size_point", "Podaj wielkość punktów", min = 1, max = 10, value = 2, step = 0.5),
+                                           radioButtons('kolory_scatter', 'Jaką skalę kolorów zastosować?', c('domyślna', 'colorbrewer', 'viridis', 'odcienie szarości', 'własna :)'),
+                                                        selected = 'domyślna', inline = TRUE),
+                                           conditionalPanel(
+                                             condition = "input.kolory_scatter == 'colorbrewer'",
+                                             selectInput('colorbrewer_scatter', label = 'Którą skalę Colorbrewer zastosować?',
+                                                         choices = c('Set1', 'Set2', 'Set3', 'Pastel1', 'Pastel2', 'Paired', 'Dark2', 'Accent'),
+                                                         selected = 'Set1', multiple = FALSE)
+                                           ),
+                                           conditionalPanel(
+                                             condition = "input.kolory_scatter == 'viridis'",
+                                             selectInput('viridis_scatter', label = 'Którą skalę viridis zastosować?',
+                                                         choices = c('viridis', 'magma', 'plasma', 'inferno', 'cividis'),
+                                                         selected = 'viridis', multiple = FALSE)
+                                           ),
+                                           conditionalPanel(
+                                             condition = "input.kolory_scatter == 'własna :)'",
+                                             textInput('wlasne_kolory_scatter', 'Tutaj wpisz wybrane nazwy kolorów oddzielając je przecinkiem. Powinny być to kolory 
+                                          predefiniowane w R (można sprawdzić jakie np. na stronie 
+                                          http://sape.inf.usi.ch/quick-reference/ggplot2/colour) albo skorzystać 
+                                          z notacji #FF0000')),
+                                           checkboxInput('trend', 'Czy dodać linię trendu?',
+                                                         value =  FALSE),
+                                           conditionalPanel(
+                                             condition = "input.trend",
+                                             radioButtons('rodzaj_trend', 'Wybierz rodzaj linii trendu',
+                                                          choices = list('Loess' = 'loess',
+                                                                         'Liniowa (lm)' = 'lm')),
+                                             conditionalPanel(
+                                               condition = "input.rodzaj_trend == 'loess'",
+                                               numericInput('span', 'Wybiersz stopień dopasowania',
+                                                            value = 0.75, min = 0, step = 0.05)
+                                             ),
+                                             checkboxInput('se', 'Czy pokazać przedział ufności?', value = TRUE),
+                                             numericInput('size_trend', "Podaj grubość lilnii trendu",
+                                                          value = 1, step = 0.5, min = 0)
+                                           )
+                                           #,
+                                           # radioButtons('corr', 'Czy policzyć korelację?',
+                                           #              choices = list('Nie' = 'nie', 
+                                           #                             'Tak (pearson)' = 'pearson',
+                                           #                             'Tak (spearman)' = 'spearman'
+                                           #              ))
+                                           
+                                           
+                                           
                           )
                         ),
                         mainPanel(
@@ -269,7 +353,7 @@ app_ui <- function(request) {
                                      tableOutput("tabela_podsumowanie")
                             ),
                             tabPanel("Wykresy",
-                                     plotOutput('wykres_podsumowanie', height = "800px")
+                                     plotOutput('wykres_podsumowanie', height = "600px")
                             )
                           )
                         )

@@ -327,6 +327,7 @@ app_server <- function( input, output, session ) {
     
     wb <- dane_porownanie()
     
+    
     wb %>% dplyr::filter(numer_chrom <= input$n_kompl) -> wb
     wb <- as.data.frame(wb)
     
@@ -352,6 +353,34 @@ app_server <- function( input, output, session ) {
     
   })
   
+  scatterInput <- reactive({
+    
+    wb <- dane_porownanie()
+    wb %>% dplyr::filter(numer_chrom <= input$n_kompl) %>%
+      dplyr::mutate(numer_chrom = factor(numer_chrom))-> wb
+    
+    p <- EDA::draw_scatter(wb = wb,
+                      x_var = input$os_x_scatter,
+                      y_var = input$os_y_scatter,
+                      color_var = input$os_color_scatter,
+                      facet_var = input$os_facet_scatter,
+                      trend = input$trend,
+                      size_trend = input$size_trend,
+                      model = input$rodzaj_trend,
+                      span = input$span,
+                      se = input$se,
+                      alpha = input$alpha_point,
+                      size_point = input$size_point,
+                      kolory = input$kolory_scatter,
+                      viridis = input$viridis_scatter,
+                      brewer = input$colorbrewer_scatter,
+                      wlasne = input$wlasne_kolory_scatter)
+    
+    return(p)
+    
+  })
+  
+
   output$wykres_podsumowanie <- renderPlot({
     if (is.null(input$wyniki))
       return(NULL)
@@ -361,6 +390,8 @@ app_server <- function( input, output, session ) {
       print(densityInput())
     } else if(input$rodzaj_wykres_summ == 'box'){
       print(boxplotInput())
+    } else if(input$rodzaj_wykres_summ == 'scatter'){
+      print(scatterInput())
     }
   })
   
