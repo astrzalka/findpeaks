@@ -119,234 +119,93 @@ app_ui <- function(request) {
                         
                ),
                tabPanel("Porównanie szczepów",
-                        sidebarLayout(sidebarPanel(
-                          fileInput('wyniki', 'Wczytaj pliki txt z wynikami', multiple = TRUE),
-                          radioButtons('summ_type', 'Jakie podsumowanie pokazać?', 
-                                       choices = list('Szczepy' = 'szczep',
-                                                      "Szczepy i komórki" = 'hyphae',
-                                                      "szczepy i kompleksy" = 'komp')),
-                          numericInput('n_kompl', "Ile maksymalnie kompleksów uzwględnić w analizach?",
-                                       value = 1),
-                          downloadButton('download_data_all', 'Pobierz zebrane dane w formacie txt'),
-                          selectInput('rodzaj_wykres_summ', 'Wybierz rodzaj wykresu',
-                                      choices = list('Histogram' = 'hist',
-                                                     "Wykres gęstości" = 'density',
-                                                     'Boxplot' = 'box',
-                                                     'Scatterplot' = 'scatter'
-                                      )),
-                          conditionalPanel(condition = 'input.rodzaj_wykres_summ == "hist" | input.rodzaj_wykres_summ == "density"',
-                                           selectInput('os_x_hist', 'Wybierz zmienną do analizy',
-                                                       choices = list('Odległość od tipa' = 'dist_tip',
-                                                                      'Odległość pomiędzy kompleksami' = 'dist_pom',
-                                                                      'Intensywnosć fluorescencji' = 'int_raw')),
-                                           selectInput('color_hist', "Kolor",
-                                                       choices = list('Szczep' = 'szczep',
-                                                                      'Kompleks' = 'numer_chrom',
-                                                                      'Komórka' = 'komorka'))
+                        #sidebarLayout(sidebarPanel(
+                        fluidRow(
+                          column(2, style = "background-color: #f8f9fa;",
+                                 fileInput('wyniki', 'Wczytaj pliki txt z wynikami', multiple = TRUE),
+                                 radioButtons('summ_type', 'Jakie podsumowanie pokazać?', 
+                                              choices = list('Szczepy' = 'szczep',
+                                                             "Szczepy i komórki" = 'hyphae',
+                                                             "szczepy i kompleksy" = 'komp')),
+                                 numericInput('n_kompl', "Ile maksymalnie kompleksów uzwględnić w analizach?",
+                                              value = 1),
+                                 downloadButton('download_data_all', 'Pobierz zebrane dane (txt)'),
+                                 selectInput('rodzaj_wykres_summ', 'Wybierz rodzaj wykresu',
+                                             choices = list('Histogram' = 'hist',
+                                                            "Wykres gęstości" = 'density',
+                                                            'Boxplot' = 'box',
+                                                            'Scatterplot' = 'scatter'
+                                             )),
+                                 conditionalPanel(condition = 'input.rodzaj_wykres_summ == "hist" | input.rodzaj_wykres_summ == "density"',
+                                                  selectInput('os_x_hist', 'Wybierz zmienną do analizy',
+                                                              choices = list('Odległość od tipa' = 'dist_tip',
+                                                                             'Odległość pomiędzy kompleksami' = 'dist_pom',
+                                                                             'Intensywnosć fluorescencji' = 'int_raw')),
+                                                  selectInput('color_hist', "Kolor",
+                                                              choices = list('Szczep' = 'szczep',
+                                                                             'Kompleks' = 'numer_chrom',
+                                                                             'Komórka' = 'komorka'))
+                                 ),
+                                 
+                                 
+                                 
+                                 conditionalPanel(condition = 'input.rodzaj_wykres_summ == "box"',
+                                                  selectInput('os_x_box', 'Wybierz oś X',
+                                                              choices = list('Szczep' = 'szczep',
+                                                                             'Kompleks' = 'numer_chrom',
+                                                                             'Czas' = 'czas')),
+                                                  selectInput('os_y_box', 'Wybierz oś Y',
+                                                              choices = list('Odległość od tipa' = 'dist_tip',
+                                                                             'Odległość pomiędzy kompleksami' = 'dist_pom',
+                                                                             'Intensywnosć fluorescencji' = 'int_raw'))
+                                                  
+                                 ),
+                                 conditionalPanel(condition = 'input.rodzaj_wykres_summ == "scatter"',
+                                                  selectInput('os_x_scatter', 'Wybierz oś X',
+                                                              choices = list('Czas' = 'czas',
+                                                                             "Długość" = 'dlug',
+                                                                             "Odległość od tipa" = 'dist_tip',
+                                                                             "Odległość od podstawy" = 'dist_base',
+                                                                             "Odległość pomiędzy" = 'dist_pom',
+                                                                             "Intensywność fluorescencji" = 'int_raw',
+                                                                             "Liczba kompleksów" = 'n_chrom',
+                                                                             'Kompleks' = 'numer_chrom')),
+                                                  selectInput('os_y_scatter', 'Wybierz oś Y',
+                                                              choices = list('Czas' = 'czas',
+                                                                             "Długość" = 'dlug',
+                                                                             "Odległość od tipa" = 'dist_tip',
+                                                                             "Odległość od podstawy" = 'dist_base',
+                                                                             "Odległość pomiędzy" = 'dist_pom',
+                                                                             "Intensywność fluorescencji" = 'int_raw',
+                                                                             "Liczba kompleksów" = 'n_chrom',
+                                                                             'Kompleks' = 'numer_chrom'),
+                                                              selected = 'dist_tip'),
+                                                  selectInput('os_color_scatter', 'Pokoloruj według',
+                                                              choices = list("brak" = 'brak',
+                                                                             "Szczep" = 'szczep',
+                                                                             "Komórka" = 'komorka',
+                                                                             'Czas' = 'czas',
+                                                                             "Długość" = 'dlug',
+                                                                             "Odległość od tipa" = 'dist_tip',
+                                                                             "Odległość od podstawy" = 'dist_base',
+                                                                             "Odległość pomiędzy" = 'dist_pom',
+                                                                             "Intensywność fluorescencji" = 'int_raw',
+                                                                             "Liczba kompleksów" = 'n_chrom',
+                                                                             'Kompleks' = 'numer_chrom')),
+                                                  selectInput('os_facet_scatter', 'Podziel na panele według',
+                                                              choices = list("brak" = 'brak',
+                                                                             "Szczep" = 'szczep',
+                                                                             "Komórka" = 'komorka',
+                                                                             "Liczba kompleksów" = 'n_chrom',
+                                                                             'Kompleks' = 'numer_chrom'))
+                                                  
+                                 ),
+                                 
                           ),
-                          conditionalPanel(condition = 'input.rodzaj_wykres_summ == "hist"',
-                                           numericInput("bin", "Szerokość słupków", value=0, step = 0.1),
-                                           radioButtons("facet", "Czy podzielić na panele?", choices = list("Tak" = TRUE, "Nie" = FALSE), selected = TRUE, inline = TRUE),
-                                           radioButtons("os_y", "Oś Y?", choices = list("count" = 1, "density" = 2), selected = 1, inline = TRUE),
-                                           radioButtons('kolory_hist', 'Jaką skalę kolorów zastosować?', c('domyślna', 'colorbrewer', 'viridis', 'odcienie szarości', 'własna :)'),
-                                                        selected = 'domyślna', inline = TRUE),
-                                           conditionalPanel(
-                                             condition = "input.kolory_hist == 'colorbrewer'",
-                                             selectInput('colorbrewer_hist', label = 'Którą skalę Colorbrewer zastosować?',
-                                                         choices = c('Set1', 'Set2', 'Set3', 'Pastel1', 'Pastel2', 'Paired', 'Dark2', 'Accent',
-                                                                     'Spectral' ,'RdYlGn','RdYlBu','RdBu', 'PuOr','PRGn','PiYG', 'YlOrRd','YlGnBu',
-                                                                     'PuBuGn','Blues', 'YlGn', 'Reds', 'RdPu', 'Purples', 'OrRd', 'GnBu' ),
-                                                         selected = 'Set1', multiple = FALSE)
-                                           ),
-                                           conditionalPanel(
-                                             condition = "input.kolory_hist == 'viridis'",
-                                             selectInput('viridis_hist', label = 'Którą skalę viridis zastosować?',
-                                                         choices = c('viridis', 'magma', 'plasma', 'inferno', 'cividis'),
-                                                         selected = 'viridis', multiple = FALSE)
-                                           ),
-                                           conditionalPanel(
-                                             condition = "input.kolory_hist == 'własna :)'",
-                                             textInput('wlasne_kolory_hist', 'Tutaj wpisz wybrane nazwy kolorów oddzielając je przecinkiem. Powinny być to kolory 
-                                          predefiniowane w R (można sprawdzić jakie np. na stronie 
-                                          http://sape.inf.usi.ch/quick-reference/ggplot2/colour) albo skorzystać 
-                                          z notacji #FF0000')
-                                           ),
-                                           textInput('os_x', 'Nazwa osi X', 'Wartość'),
-                                           textInput('os_y_nazwa', 'Nazwa osi Y', 'Liczba')
-                          ),
-                          conditionalPanel(condition = 'input.rodzaj_wykres_summ == "density"',
-                                           radioButtons('fill_dens', 'Czy dodać wypełnienie?', 
-                                                        choices = list("Tak" = "TRUE", "Nie" = "FALSE"), 
-                                                        selected = "FALSE", inline = TRUE),
-                                           radioButtons('kolory_dens', 'Jaką skalę kolorów zastosować?', c('domyślna', 'colorbrewer', 'viridis', 'odcienie szarości', 'własna :)'),
-                                                        selected = 'domyślna', inline = TRUE),
-                                           conditionalPanel(
-                                             condition = "input.kolory_dens == 'colorbrewer'",
-                                             selectInput('colorbrewer_dens', label = 'Którą skalę Colorbrewer zastosować?',
-                                                         choices = c('Set1', 'Set2', 'Set3', 'Pastel1', 'Pastel2', 'Paired', 'Dark2', 'Accent',
-                                                                     'Spectral' ,'RdYlGn','RdYlBu','RdBu', 'PuOr','PRGn','PiYG', 'YlOrRd','YlGnBu',
-                                                                     'PuBuGn','Blues', 'YlGn', 'Reds', 'RdPu', 'Purples', 'OrRd', 'GnBu' ),
-                                                         selected = 'Set1', multiple = FALSE)
-                                           ),
-                                           conditionalPanel(
-                                             condition = "input.kolory_dens == 'viridis'",
-                                             selectInput('viridis_dens', label = 'Którą skalę viridis zastosować?',
-                                                         choices = c('viridis', 'magma', 'plasma', 'inferno', 'cividis'),
-                                                         selected = 'viridis', multiple = FALSE)
-                                           ),
-                                           conditionalPanel(
-                                             condition = "input.kolory_dens == 'własna :)'",
-                                             textInput('wlasne_kolory_dens', 'Tutaj wpisz wybrane nazwy kolorów oddzielając je przecinkiem. Powinny być to kolory 
-                                          predefiniowane w R (można sprawdzić jakie np. na stronie 
-                                          http://sape.inf.usi.ch/quick-reference/ggplot2/colour) albo skorzystać 
-                                          z notacji #FF0000')
-                                           ),
-                                           textInput('os_x_dens', 'Nazwa osi X', 'Wartość'),
-                                           textInput('os_y_dens', 'Nazwa osi Y', 'Liczba')
-                          ),
-                          conditionalPanel(condition = 'input.rodzaj_wykres_summ == "box"',
-                                           selectInput('os_x_box', 'Wybierz oś X',
-                                                       choices = list('Szczep' = 'szczep',
-                                                                      'Kompleks' = 'numer_chrom',
-                                                                      'Czas' = 'czas')),
-                                           selectInput('os_y_box', 'Wybierz oś Y',
-                                                       choices = list('Odległość od tipa' = 'dist_tip',
-                                                                      'Odległość pomiędzy kompleksami' = 'dist_pom',
-                                                                      'Intensywnosć fluorescencji' = 'int_raw')),
-                                           radioButtons('boxviolin', 'Jaki wykres narysować?', 
-                                                        c('Boxplot' = 'Boxplot', 'Violin' = 'Violin', 'Średnia z przedziałem ufności' = 'mean_ci'), 
-                                                        inline = TRUE),
-                                           radioButtons('porownanie', 'Jakie chcesz wykonać porównanie', 
-                                                        list('brak' = 'brak', 'Tylko wobec kontroli' = 'kontrola', 
-                                                             'Pomiędzy niektórymi grupami (podaj niżej)' = 'grupy')),
-                                           conditionalPanel(condition = 'input.porownanie == "kontrola"',
-                                                            numericInput('kontrola', 'Która grupa to kontrola?', 1, min = 1)
-                                           ),
-                                           conditionalPanel(condition = 'input.porownanie == "grupy"',
-                                                            textInput('porownania', 'Tutaj wpisz grupy do porównania w formacie:
-                                          Typ_A Typ_B;Typ_A Typ_C')
-                                           ),
-                                           radioButtons('punkty', 'Czy dodać wszystkie obserwacje?', 
-                                                        c('Nie' = 'none', 'Tak (beeswarm)' = 'beeswarm', 
-                                                          'Tak (quasirandom)' = 'quasirandom'), 
-                                                        inline = TRUE),
-                                           conditionalPanel(condition ='input.porownanie != "brak"' ,
-                                                            radioButtons('rodzaj_test', 'Jaki test zastosować?', 
-                                                                         c('t.test' = 't.test', 'wilcoxon' = 'wilcox.test'), inline = TRUE),
-                                                            radioButtons('p_format', 'Jak pokazać wartość p?', c('Liczbowo' = 'p.adj', 'Gwiazdki' = 'p.signif'), inline = TRUE)
-                                           ),
-                                           radioButtons('anova', 'Czy dodać wynik Anova lub Kruskal Wallis test?', 
-                                                        c('Nie' = 'nie','Anova' = 'anova', 'Kruskal Wallis' = 'kruskal.test'), 
-                                                        selected = 'nie', inline = TRUE),
-                                           radioButtons('kolory', 'Jaką skalę kolorów zastosować?', c('domyślna', 'colorbrewer', 'viridis', 'odcienie szarości', 'własna :)'),
-                                                        selected = 'domyślna', inline = TRUE),
-                                           conditionalPanel(
-                                             condition = "input.kolory == 'colorbrewer'",
-                                             selectInput('colorbrewer', label = 'Którą skalę Colorbrewer zastosować?',
-                                                         choices = c('Set1', 'Set2', 'Set3', 'Pastel1', 'Pastel2', 'Paired', 'Dark2', 'Accent',
-                                                                     'Spectral' ,'RdYlGn','RdYlBu','RdBu', 'PuOr','PRGn','PiYG', 'YlOrRd','YlGnBu',
-                                                                     'PuBuGn','Blues', 'YlGn', 'Reds', 'RdPu', 'Purples', 'OrRd', 'GnBu' ),
-                                                         selected = 'Set1', multiple = FALSE)
-                                           ),
-                                           conditionalPanel(
-                                             condition = "input.kolory == 'viridis'",
-                                             selectInput('viridis', label = 'Którą skalę viridis zastosować?',
-                                                         choices = c('viridis', 'magma', 'plasma', 'inferno', 'cividis'),
-                                                         selected = 'viridis', multiple = FALSE)
-                                           ),
-                                           conditionalPanel(
-                                             condition = "input.kolory == 'własna :)'",
-                                             textInput('wlasne_kolory', 'Tutaj wpisz wybrane nazwy kolorów oddzielając je przecinkiem. Powinny być to kolory 
-                                          predefiniowane w R (można sprawdzić jakie np. na stronie 
-                                          http://sape.inf.usi.ch/quick-reference/ggplot2/colour) albo skorzystać 
-                                          z notacji #FF0000')
-                                           ),
-                                           textInput('os_x_box', 'Nazwa osi X', 'Wartość'),
-                                           textInput('os_y_box', 'Nazwa osi Y', 'Liczba')
-                          ),
-                          conditionalPanel(condition = 'input.rodzaj_wykres_summ == "scatter"',
-                                           selectInput('os_x_scatter', 'Wybierz oś X',
-                                                       choices = list('Czas' = 'czas',
-                                                                      "Długość" = 'dlug',
-                                                                      "Odległość od tipa" = 'dist_tip',
-                                                                      "Odległość od podstawy" = 'dist_base',
-                                                                      "Odległość pomiędzy" = 'dist_pom',
-                                                                      "Intensywność fluorescencji" = 'int_raw',
-                                                                      "Liczba kompleksów" = 'n_chrom',
-                                                                      'Kompleks' = 'numer_chrom')),
-                                           selectInput('os_y_scatter', 'Wybierz oś Y',
-                                                       choices = list('Czas' = 'czas',
-                                                                      "Długość" = 'dlug',
-                                                                      "Odległość od tipa" = 'dist_tip',
-                                                                      "Odległość od podstawy" = 'dist_base',
-                                                                      "Odległość pomiędzy" = 'dist_pom',
-                                                                      "Intensywność fluorescencji" = 'int_raw',
-                                                                      "Liczba kompleksów" = 'n_chrom',
-                                                                      'Kompleks' = 'numer_chrom'),
-                                                       selected = 'dist_tip'),
-                                           selectInput('os_color_scatter', 'Pokoloruj według',
-                                                       choices = list("brak" = 'brak',
-                                                                      "Szczep" = 'szczep',
-                                                                      "Komórka" = 'komorka',
-                                                                      'Czas' = 'czas',
-                                                                      "Długość" = 'dlug',
-                                                                      "Odległość od tipa" = 'dist_tip',
-                                                                      "Odległość od podstawy" = 'dist_base',
-                                                                      "Odległość pomiędzy" = 'dist_pom',
-                                                                      "Intensywność fluorescencji" = 'int_raw',
-                                                                      "Liczba kompleksów" = 'n_chrom',
-                                                                      'Kompleks' = 'numer_chrom')),
-                                           selectInput('os_facet_scatter', 'Podziel na panele według',
-                                                       choices = list("brak" = 'brak',
-                                                                      "Szczep" = 'szczep',
-                                                                      "Komórka" = 'komorka',
-                                                                      "Liczba kompleksów" = 'n_chrom',
-                                                                      'Kompleks' = 'numer_chrom')),
-                                           sliderInput("alpha_point", "Podaj wartość alpha", min = 0, max = 1, value = 1, step = 0.1),
-                                           sliderInput("size_point", "Podaj wielkość punktów", min = 1, max = 10, value = 2, step = 0.5),
-                                           radioButtons('kolory_scatter', 'Jaką skalę kolorów zastosować?', c('domyślna', 'colorbrewer', 'viridis', 'odcienie szarości', 'własna :)'),
-                                                        selected = 'domyślna', inline = TRUE),
-                                           conditionalPanel(
-                                             condition = "input.kolory_scatter == 'colorbrewer'",
-                                             selectInput('colorbrewer_scatter', label = 'Którą skalę Colorbrewer zastosować?',
-                                                         choices = c('Set1', 'Set2', 'Set3', 'Pastel1', 'Pastel2', 'Paired', 'Dark2', 'Accent',
-                                                                     'Spectral' ,'RdYlGn','RdYlBu','RdBu', 'PuOr','PRGn','PiYG', 'YlOrRd','YlGnBu',
-                                                                     'PuBuGn','Blues', 'YlGn', 'Reds', 'RdPu', 'Purples', 'OrRd', 'GnBu' ),
-                                                         selected = 'Spectral', multiple = FALSE)
-                                           ),
-                                           conditionalPanel(
-                                             condition = "input.kolory_scatter == 'viridis'",
-                                             selectInput('viridis_scatter', label = 'Którą skalę viridis zastosować?',
-                                                         choices = c('viridis', 'magma', 'plasma', 'inferno', 'cividis'),
-                                                         selected = 'viridis', multiple = FALSE)
-                                           ),
-                                           conditionalPanel(
-                                             condition = "input.kolory_scatter == 'własna :)'",
-                                             textInput('wlasne_kolory_scatter', 'Tutaj wpisz wybrane nazwy kolorów oddzielając je przecinkiem. Powinny być to kolory 
-                                          predefiniowane w R (można sprawdzić jakie np. na stronie 
-                                          http://sape.inf.usi.ch/quick-reference/ggplot2/colour) albo skorzystać 
-                                          z notacji #FF0000')),
-                                           checkboxInput('trend', 'Czy dodać linię trendu?',
-                                                         value =  FALSE),
-                                           conditionalPanel(
-                                             condition = "input.trend",
-                                             radioButtons('rodzaj_trend', 'Wybierz rodzaj linii trendu',
-                                                          choices = list('Loess' = 'loess',
-                                                                         'Liniowa (lm)' = 'lm')),
-                                             conditionalPanel(
-                                               condition = "input.rodzaj_trend == 'loess'",
-                                               numericInput('span', 'Wybiersz stopień dopasowania',
-                                                            value = 0.75, min = 0, step = 0.05)
-                                             ),
-                                             checkboxInput('se', 'Czy pokazać przedział ufności?', value = TRUE),
-                                             numericInput('size_trend', "Podaj grubość lilnii trendu",
-                                                          value = 1, step = 0.5, min = 0)
-                                           )
-                          ),
-                          downloadButton('download_plot', 'Pobierz wykres (dodaj .png do nazwy pliku)'),
-                          numericInput('width_plot', 'Szerokość obrazka [cm]', 20, min = 5, max = 25),
-                          numericInput('height_plot', 'Wysokość obrazka [cm]', 14, min = 5, max = 25),
-                          numericInput('res_plot', 'Rozdzielczość', 200, min = 100, max = 500)
+                          # downloadButton('download_plot', 'Pobierz wykres (dodaj .png do nazwy pliku)'),
+                          # numericInput('width_plot', 'Szerokość obrazka [cm]', 20, min = 5, max = 25),
+                          # numericInput('height_plot', 'Wysokość obrazka [cm]', 14, min = 5, max = 25),
+                          # numericInput('res_plot', 'Rozdzielczość', 200, min = 100, max = 500)
                           #,
                           # radioButtons('corr', 'Czy policzyć korelację?',
                           #              choices = list('Nie' = 'nie', 
@@ -357,20 +216,182 @@ app_ui <- function(request) {
                           
                           
                           
-                        ),
-                        mainPanel(
-                          tabsetPanel(
-                            tabPanel("Dane",
-                                     tableOutput("tabela_wyniki")
-                            ),
-                            tabPanel("Podsumowanie",
-                                     tableOutput("tabela_podsumowanie")
-                            ),
-                            tabPanel("Wykresy",
-                                     plotOutput('wykres_podsumowanie', height = "600px")
-                            )
+                          
+                          #mainPanel(
+                          column(8,
+                                 tabsetPanel(
+                                   tabPanel("Dane",
+                                            DT::dataTableOutput("tabela_wyniki", width = 600)
+                                   ),
+                                   tabPanel("Podsumowanie",
+                                            tableOutput("tabela_podsumowanie")
+                                   ),
+                                   tabPanel("Wykresy",
+                                            plotOutput('wykres_podsumowanie', height = "600px")
+                                   )
+                                 )
+                          ),
+                          column(2, style = "background-color: #f8f9fa;",
+                                 conditionalPanel(condition = 'input.rodzaj_wykres_summ == "hist"',
+                                                  numericInput("bin", "Szerokość słupków", value=0, step = 0.1),
+                                                  radioButtons("facet", "Czy podzielić na panele?", choices = list("Tak" = TRUE, "Nie" = FALSE), selected = TRUE, inline = TRUE),
+                                                  radioButtons("os_y", "Oś Y?", choices = list("count" = 1, "density" = 2), selected = 1, inline = TRUE),
+                                                  radioButtons('kolory_hist', 'Jaką skalę kolorów zastosować?', c('domyślna', 'colorbrewer', 'viridis', 'odcienie szarości', 'własna :)'),
+                                                               selected = 'domyślna', inline = TRUE),
+                                                  conditionalPanel(
+                                                    condition = "input.kolory_hist == 'colorbrewer'",
+                                                    selectInput('colorbrewer_hist', label = 'Którą skalę Colorbrewer zastosować?',
+                                                                choices = c('Set1', 'Set2', 'Set3', 'Pastel1', 'Pastel2', 'Paired', 'Dark2', 'Accent',
+                                                                            'Spectral' ,'RdYlGn','RdYlBu','RdBu', 'PuOr','PRGn','PiYG', 'YlOrRd','YlGnBu',
+                                                                            'PuBuGn','Blues', 'YlGn', 'Reds', 'RdPu', 'Purples', 'OrRd', 'GnBu' ),
+                                                                selected = 'Set1', multiple = FALSE)
+                                                  ),
+                                                  conditionalPanel(
+                                                    condition = "input.kolory_hist == 'viridis'",
+                                                    selectInput('viridis_hist', label = 'Którą skalę viridis zastosować?',
+                                                                choices = c('viridis', 'magma', 'plasma', 'inferno', 'cividis'),
+                                                                selected = 'viridis', multiple = FALSE)
+                                                  ),
+                                                  conditionalPanel(
+                                                    condition = "input.kolory_hist == 'własna :)'",
+                                                    textInput('wlasne_kolory_hist', 'Tutaj wpisz wybrane nazwy kolorów oddzielając je przecinkiem. Powinny być to kolory 
+                                          predefiniowane w R (można sprawdzić jakie np. na stronie 
+                                          http://sape.inf.usi.ch/quick-reference/ggplot2/colour) albo skorzystać 
+                                          z notacji #FF0000')
+                                                  ),
+                                                  textInput('os_x', 'Nazwa osi X', 'Wartość'),
+                                                  textInput('os_y_nazwa', 'Nazwa osi Y', 'Liczba')
+                                 ),
+                                 conditionalPanel(condition = 'input.rodzaj_wykres_summ == "density"',
+                                                  radioButtons('fill_dens', 'Czy dodać wypełnienie?', 
+                                                               choices = list("Tak" = "TRUE", "Nie" = "FALSE"), 
+                                                               selected = "FALSE", inline = TRUE),
+                                                  radioButtons('kolory_dens', 'Jaką skalę kolorów zastosować?', c('domyślna', 'colorbrewer', 'viridis', 'odcienie szarości', 'własna :)'),
+                                                               selected = 'domyślna', inline = TRUE),
+                                                  conditionalPanel(
+                                                    condition = "input.kolory_dens == 'colorbrewer'",
+                                                    selectInput('colorbrewer_dens', label = 'Którą skalę Colorbrewer zastosować?',
+                                                                choices = c('Set1', 'Set2', 'Set3', 'Pastel1', 'Pastel2', 'Paired', 'Dark2', 'Accent',
+                                                                            'Spectral' ,'RdYlGn','RdYlBu','RdBu', 'PuOr','PRGn','PiYG', 'YlOrRd','YlGnBu',
+                                                                            'PuBuGn','Blues', 'YlGn', 'Reds', 'RdPu', 'Purples', 'OrRd', 'GnBu' ),
+                                                                selected = 'Set1', multiple = FALSE)
+                                                  ),
+                                                  conditionalPanel(
+                                                    condition = "input.kolory_dens == 'viridis'",
+                                                    selectInput('viridis_dens', label = 'Którą skalę viridis zastosować?',
+                                                                choices = c('viridis', 'magma', 'plasma', 'inferno', 'cividis'),
+                                                                selected = 'viridis', multiple = FALSE)
+                                                  ),
+                                                  conditionalPanel(
+                                                    condition = "input.kolory_dens == 'własna :)'",
+                                                    textInput('wlasne_kolory_dens', 'Tutaj wpisz wybrane nazwy kolorów oddzielając je przecinkiem. Powinny być to kolory 
+                                          predefiniowane w R (można sprawdzić jakie np. na stronie 
+                                          http://sape.inf.usi.ch/quick-reference/ggplot2/colour) albo skorzystać 
+                                          z notacji #FF0000')
+                                                  ),
+                                                  textInput('os_x_dens', 'Nazwa osi X', 'Wartość'),
+                                                  textInput('os_y_dens', 'Nazwa osi Y', 'Liczba')
+                                 ),
+                                 conditionalPanel(condition = 'input.rodzaj_wykres_summ == "box"',
+                                                  radioButtons('boxviolin', 'Jaki wykres narysować?', 
+                                                               c('Boxplot' = 'Boxplot', 'Violin' = 'Violin', 'Średnia z przedziałem ufności' = 'mean_ci'), 
+                                                               inline = TRUE),
+                                                  radioButtons('porownanie', 'Jakie chcesz wykonać porównanie', 
+                                                               list('brak' = 'brak', 'Tylko wobec kontroli' = 'kontrola', 
+                                                                    'Pomiędzy niektórymi grupami (podaj niżej)' = 'grupy')),
+                                                  conditionalPanel(condition = 'input.porownanie == "kontrola"',
+                                                                   numericInput('kontrola', 'Która grupa to kontrola?', 1, min = 1)
+                                                  ),
+                                                  conditionalPanel(condition = 'input.porownanie == "grupy"',
+                                                                   textInput('porownania', 'Tutaj wpisz grupy do porównania w formacie:
+                                          Typ_A Typ_B;Typ_A Typ_C')
+                                                  ),
+                                                  radioButtons('punkty', 'Czy dodać wszystkie obserwacje?', 
+                                                               c('Nie' = 'none', 'Tak (beeswarm)' = 'beeswarm', 
+                                                                 'Tak (quasirandom)' = 'quasirandom'), 
+                                                               inline = TRUE),
+                                                  conditionalPanel(condition ='input.porownanie != "brak"' ,
+                                                                   radioButtons('rodzaj_test', 'Jaki test zastosować?', 
+                                                                                c('t.test' = 't.test', 'wilcoxon' = 'wilcox.test'), inline = TRUE),
+                                                                   radioButtons('p_format', 'Jak pokazać wartość p?', c('Liczbowo' = 'p.adj', 'Gwiazdki' = 'p.signif'), inline = TRUE)
+                                                  ),
+                                                  radioButtons('anova', 'Czy dodać wynik Anova lub Kruskal Wallis test?', 
+                                                               c('Nie' = 'nie','Anova' = 'anova', 'Kruskal Wallis' = 'kruskal.test'), 
+                                                               selected = 'nie', inline = TRUE),
+                                                  radioButtons('kolory', 'Jaką skalę kolorów zastosować?', c('domyślna', 'colorbrewer', 'viridis', 'odcienie szarości', 'własna :)'),
+                                                               selected = 'domyślna', inline = TRUE),
+                                                  conditionalPanel(
+                                                    condition = "input.kolory == 'colorbrewer'",
+                                                    selectInput('colorbrewer', label = 'Którą skalę Colorbrewer zastosować?',
+                                                                choices = c('Set1', 'Set2', 'Set3', 'Pastel1', 'Pastel2', 'Paired', 'Dark2', 'Accent',
+                                                                            'Spectral' ,'RdYlGn','RdYlBu','RdBu', 'PuOr','PRGn','PiYG', 'YlOrRd','YlGnBu',
+                                                                            'PuBuGn','Blues', 'YlGn', 'Reds', 'RdPu', 'Purples', 'OrRd', 'GnBu' ),
+                                                                selected = 'Set1', multiple = FALSE)
+                                                  ),
+                                                  conditionalPanel(
+                                                    condition = "input.kolory == 'viridis'",
+                                                    selectInput('viridis', label = 'Którą skalę viridis zastosować?',
+                                                                choices = c('viridis', 'magma', 'plasma', 'inferno', 'cividis'),
+                                                                selected = 'viridis', multiple = FALSE)
+                                                  ),
+                                                  conditionalPanel(
+                                                    condition = "input.kolory == 'własna :)'",
+                                                    textInput('wlasne_kolory', 'Tutaj wpisz wybrane nazwy kolorów oddzielając je przecinkiem. Powinny być to kolory 
+                                          predefiniowane w R (można sprawdzić jakie np. na stronie 
+                                          http://sape.inf.usi.ch/quick-reference/ggplot2/colour) albo skorzystać 
+                                          z notacji #FF0000')
+                                                  ),
+                                                  textInput('os_x_box', 'Nazwa osi X', 'Wartość'),
+                                                  textInput('os_y_box', 'Nazwa osi Y', 'Liczba')
+                                 ),
+                                 conditionalPanel(condition = 'input.rodzaj_wykres_summ == "scatter"',
+                                                  sliderInput("alpha_point", "Podaj wartość alpha", min = 0, max = 1, value = 1, step = 0.1),
+                                                  sliderInput("size_point", "Podaj wielkość punktów", min = 1, max = 10, value = 2, step = 0.5),
+                                                  radioButtons('kolory_scatter', 'Jaką skalę kolorów zastosować?', c('domyślna', 'colorbrewer', 'viridis', 'odcienie szarości', 'własna :)'),
+                                                               selected = 'domyślna', inline = TRUE),
+                                                  conditionalPanel(
+                                                    condition = "input.kolory_scatter == 'colorbrewer'",
+                                                    selectInput('colorbrewer_scatter', label = 'Którą skalę Colorbrewer zastosować?',
+                                                                choices = c('Set1', 'Set2', 'Set3', 'Pastel1', 'Pastel2', 'Paired', 'Dark2', 'Accent',
+                                                                            'Spectral' ,'RdYlGn','RdYlBu','RdBu', 'PuOr','PRGn','PiYG', 'YlOrRd','YlGnBu',
+                                                                            'PuBuGn','Blues', 'YlGn', 'Reds', 'RdPu', 'Purples', 'OrRd', 'GnBu' ),
+                                                                selected = 'Spectral', multiple = FALSE)
+                                                  ),
+                                                  conditionalPanel(
+                                                    condition = "input.kolory_scatter == 'viridis'",
+                                                    selectInput('viridis_scatter', label = 'Którą skalę viridis zastosować?',
+                                                                choices = c('viridis', 'magma', 'plasma', 'inferno', 'cividis'),
+                                                                selected = 'viridis', multiple = FALSE)
+                                                  ),
+                                                  conditionalPanel(
+                                                    condition = "input.kolory_scatter == 'własna :)'",
+                                                    textInput('wlasne_kolory_scatter', 'Tutaj wpisz wybrane nazwy kolorów oddzielając je przecinkiem. Powinny być to kolory 
+                                          predefiniowane w R (można sprawdzić jakie np. na stronie 
+                                          http://sape.inf.usi.ch/quick-reference/ggplot2/colour) albo skorzystać 
+                                          z notacji #FF0000')),
+                                                  checkboxInput('trend', 'Czy dodać linię trendu?',
+                                                                value =  FALSE),
+                                                  conditionalPanel(
+                                                    condition = "input.trend",
+                                                    radioButtons('rodzaj_trend', 'Wybierz rodzaj linii trendu',
+                                                                 choices = list('Loess' = 'loess',
+                                                                                'Liniowa (lm)' = 'lm')),
+                                                    conditionalPanel(
+                                                      condition = "input.rodzaj_trend == 'loess'",
+                                                      numericInput('span', 'Wybiersz stopień dopasowania',
+                                                                   value = 0.75, min = 0, step = 0.05)
+                                                    ),
+                                                    checkboxInput('se', 'Czy pokazać przedział ufności?', value = TRUE),
+                                                    numericInput('size_trend', "Podaj grubość lilnii trendu",
+                                                                 value = 1, step = 0.5, min = 0)
+                                                  )
+                                 ),
+                                 downloadButton('download_plot', 'Pobierz wykres'),
+                                 numericInput('width_plot', 'Szerokość obrazka [cm]', 20, min = 5, max = 25),
+                                 numericInput('height_plot', 'Wysokość obrazka [cm]', 14, min = 5, max = 25),
+                                 numericInput('res_plot', 'Rozdzielczość', 200, min = 100, max = 500)
+                                 
                           )
-                        )
                         )
                )
                

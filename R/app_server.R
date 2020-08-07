@@ -207,7 +207,7 @@ app_server <- function( input, output, session ) {
                           use.names = TRUE, fill = TRUE)
   })
   
-  output$tabela_wyniki <- renderTable(dane_porownanie())
+  output$tabela_wyniki <- DT::renderDataTable(dane_porownanie()[,-c(4,7:8,16)], options = list(pageLength = 50))
   
   
   # create summary table for all data
