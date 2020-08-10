@@ -360,27 +360,27 @@ app_server <- function( input, output, session ) {
       dplyr::mutate(numer_chrom = factor(numer_chrom))-> wb
     
     p <- EDA::draw_scatter(wb = wb,
-                      x_var = input$os_x_scatter,
-                      y_var = input$os_y_scatter,
-                      color_var = input$os_color_scatter,
-                      facet_var = input$os_facet_scatter,
-                      trend = input$trend,
-                      size_trend = input$size_trend,
-                      model = input$rodzaj_trend,
-                      span = input$span,
-                      se = input$se,
-                      alpha = input$alpha_point,
-                      size_point = input$size_point,
-                      kolory = input$kolory_scatter,
-                      viridis = input$viridis_scatter,
-                      brewer = input$colorbrewer_scatter,
-                      wlasne = input$wlasne_kolory_scatter)
+                           x_var = input$os_x_scatter,
+                           y_var = input$os_y_scatter,
+                           color_var = input$os_color_scatter,
+                           facet_var = input$os_facet_scatter,
+                           trend = input$trend,
+                           size_trend = input$size_trend,
+                           model = input$rodzaj_trend,
+                           span = input$span,
+                           se = input$se,
+                           alpha = input$alpha_point,
+                           size_point = input$size_point,
+                           kolory = input$kolory_scatter,
+                           viridis = input$viridis_scatter,
+                           brewer = input$colorbrewer_scatter,
+                           wlasne = input$wlasne_kolory_scatter)
     
     return(p)
     
   })
   
-
+  
   output$wykres_podsumowanie <- renderPlot({
     if (is.null(input$wyniki))
       return(NULL)
@@ -394,6 +394,141 @@ app_server <- function( input, output, session ) {
       print(scatterInput())
     }
   })
+  
+  final_scatter <- reactive ({
+    
+    dane <- dane_porownanie()
+    
+    dane %>% dplyr::filter(numer_chrom <= input$n_kompl) %>%
+      dplyr::mutate(numer_chrom = factor(numer_chrom))-> dane
+    
+    grupy <- colnames(dane)
+    
+    numer_1 <- which(grupy == input$os_x_scatter)
+    numer_2 <- which(grupy == input$os_y_scatter)
+    
+    numery <- c(numer_1, numer_2)
+    
+    if(input$os_color_scatter != 'brak'){
+      numer_3 <- which(grupy == input$os_color_scatter)
+      numery <- c(numery, numer_3)
+    }
+    
+    if(input$os_facet_scatter != 'brak'){
+      numer_4 <- which(grupy == input$os_facet_scatter)
+      numery <- c(numery, numer_4)
+    }
+    
+    dane <- dane[,numery]
+    
+    return(dane)
+  })
+  
+  #output$scatter <- renderTable(final_scatter())
+  
+  tabela_korelacja <- reactive({
+    
+    dane <- final_scatter()
+    
+    # nazwy <- c('x', 'y')
+    
+    if(input$os_color_scatter == 'brak' & input$os_facet_scatter == 'brak'){
+      colnames(dane) <- c('x', 'y')
+      
+      dane %>% tidyr::nest(data = tidyr::everything()) -> nested
+    }
+    
+    if(input$os_color_scatter != 'brak' & input$os_facet_scatter == 'brak'){
+      colnames(dane) <- c('x', 'y', 'grupa1')
+      
+      dane %>% tidyr::nest(data = -grupa1) -> nested
+    }
+    
+    if(input$os_color_scatter == 'brak' & input$os_facet_scatter != 'brak'){
+      colnames(dane) <- c('x', 'y', 'grupa2')
+      
+      dane %>% tidyr::nest(data = -grupa2) -> nested
+    }
+    
+    if(input$os_color_scatter != 'brak' & input$os_facet_scatter != 'brak'){
+      colnames(dane) <- c('x', 'y', 'grupa1', 'grupa2')
+      
+      dane %>% tidyr::nest(data = -c(grupa1, grupa2)) -> nested
+    }
+    
+    nested %>% 
+      dplyr::mutate(test = purrr::map(data, ~ cor.test(.x$x, .x$y, method = input$corr)), # S3 list-col
+                    tidied = purrr::map(test, broom::tidy)
+      ) %>% 
+      tidyr::unnest(tidied) %>% dplyr::select(-data, -test) -> wynik
+    
+    return(wynik)
+    
+  }) 
+  
+  output$tabela_korelacja <- renderTable({
+    if(input$corr == 'nie'){
+      return(NULL)
+    }
+    
+    tabela_korelacja()
+    
+  })
+  
+  
+  tabela_lm <- reactive({
+    
+    dane <- final_scatter()
+    
+    # nazwy <- c('x', 'y')
+    
+    if(input$os_color_scatter == 'brak' & input$os_facet_scatter == 'brak'){
+      colnames(dane) <- c('x', 'y')
+      
+      dane %>% tidyr::nest(data = tidyr::everything()) -> nested
+    }
+    
+    if(input$os_color_scatter != 'brak' & input$os_facet_scatter == 'brak'){
+      colnames(dane) <- c('x', 'y', 'grupa1')
+      
+      dane %>% tidyr::nest(data = -grupa1) -> nested
+    }
+    
+    if(input$os_color_scatter == 'brak' & input$os_facet_scatter != 'brak'){
+      colnames(dane) <- c('x', 'y', 'grupa2')
+      
+      dane %>% tidyr::nest(data = -grupa2) -> nested
+    }
+    
+    if(input$os_color_scatter != 'brak' & input$os_facet_scatter != 'brak'){
+      colnames(dane) <- c('x', 'y', 'grupa1', 'grupa2')
+      
+      dane %>% tidyr::nest(data = -c(grupa1, grupa2)) -> nested
+    }
+    
+    nested %>% 
+      dplyr::mutate(fit = purrr::map(data, ~ lm(y~ x, data = .x)), # S3 list-col
+                    tidied = purrr::map(fit, broom::tidy)
+      ) %>% 
+      tidyr::unnest(tidied) %>% dplyr::select(-data, -fit) -> wynik
+    
+    return(wynik)
+    
+  }) 
+  
+  output$tabela_lm <- renderTable({
+    if(input$rodzaj_trend == 'lm'){
+      tabela_lm()
+    } else {
+      return(NULL)
+    }
+    
+    
+    
+  },
+  digits = -3)
+  
+  
   
   dane_download <- reactive({
     wb <- dane_porownanie()

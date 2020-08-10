@@ -207,11 +207,7 @@ app_ui <- function(request) {
                           # numericInput('height_plot', 'Wysokość obrazka [cm]', 14, min = 5, max = 25),
                           # numericInput('res_plot', 'Rozdzielczość', 200, min = 100, max = 500)
                           #,
-                          # radioButtons('corr', 'Czy policzyć korelację?',
-                          #              choices = list('Nie' = 'nie', 
-                          #                             'Tak (pearson)' = 'pearson',
-                          #                             'Tak (spearman)' = 'spearman'
-                          #              ))
+                          
                           
                           
                           
@@ -222,12 +218,17 @@ app_ui <- function(request) {
                                  tabsetPanel(
                                    tabPanel("Dane",
                                             DT::dataTableOutput("tabela_wyniki", width = 600)
+                                            #tableOutput('scatter')
                                    ),
                                    tabPanel("Podsumowanie",
                                             tableOutput("tabela_podsumowanie")
                                    ),
                                    tabPanel("Wykresy",
-                                            plotOutput('wykres_podsumowanie', height = "600px")
+                                            plotOutput('wykres_podsumowanie', height = "600px"),
+                                            conditionalPanel('input.rodzaj_wykres_summ == "scatter"',
+                                              tableOutput('tabela_korelacja'),
+                                              tableOutput('tabela_lm')
+                                            )
                                    )
                                  )
                           ),
@@ -347,6 +348,11 @@ app_ui <- function(request) {
                                  conditionalPanel(condition = 'input.rodzaj_wykres_summ == "scatter"',
                                                   sliderInput("alpha_point", "Podaj wartość alpha", min = 0, max = 1, value = 1, step = 0.1),
                                                   sliderInput("size_point", "Podaj wielkość punktów", min = 1, max = 10, value = 2, step = 0.5),
+                                                  radioButtons('corr', 'Czy policzyć korelację?',
+                                                               choices = list('Nie' = 'nie',
+                                                                              'Tak (pearson)' = 'pearson',
+                                                                              'Tak (spearman)' = 'spearman'
+                                                               )),
                                                   radioButtons('kolory_scatter', 'Jaką skalę kolorów zastosować?', c('domyślna', 'colorbrewer', 'viridis', 'odcienie szarości', 'własna :)'),
                                                                selected = 'domyślna', inline = TRUE),
                                                   conditionalPanel(

@@ -296,7 +296,7 @@ plot_kymograph_find_peaks <- function(dane_raw, dane_find, odwroc = TRUE, pokaz 
 #' @param reverse should plot be reversed (is 0 the tip or the bottom of the hyphae?)
 #'
 #' @return ggplot
-#'
+#' @export
 #' @examples
 plot_peaks_ridges <- function(data, scale = 'osobno', gradient = TRUE, skala = 2, reverse = FALSE){
   
