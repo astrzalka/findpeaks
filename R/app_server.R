@@ -194,7 +194,7 @@ app_server <- function( input, output, session ) {
     min_czas <- min(dane$czas)-input$lapse
     max_czas <- max(dane$czas)-input$lapse
     
-    sliderInput('filtr_czas', 'Podaj zakres czasu - filtrowanie wykresów', min_czas, max_czas, value = c(min_czas, max_czas))
+    sliderInput('filtr_czas', 'Choose time range for plots filtering', min_czas, max_czas, value = c(min_czas, max_czas))
     
   })
   
