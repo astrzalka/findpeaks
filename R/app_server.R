@@ -18,7 +18,7 @@ app_server <- function( input, output, session ) {
     # )
     
     if(input$example == TRUE){
-      d <- dane_1
+      d <- dane_2
       return(d)
     }
     

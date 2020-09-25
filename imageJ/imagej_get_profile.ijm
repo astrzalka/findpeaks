@@ -46,7 +46,7 @@ ile = roiManager("count");
 	selectWindow(images[0]);
 
 	// choose the first ROI - first image in new stack
-	RoiManager("Select", 0);
+	roiManager("Select", 0);
 	first = getValue("Frame");
 	print(first);
 
@@ -66,7 +66,8 @@ images = getList("image.titles");
 // save all new images
 for(i=1; i < lengthOf(images); i+=1){
 
-	// skip the first image
+	// zaczynamy od 1 żeby pominąć wyjściowy obraz - checmy zapisać tylko te wygenerowane w pętli wyżej
+	//print(images[i]);
 	save(folder+"image"+images[i]+".tiff");
 	selectWindow(images[i]);
 	close();
