@@ -27,6 +27,7 @@ usethis::use_package( "magrittr" )
 usethis::use_package( "Hmisc" )
 usethis::use_package( "EDA" )
 usethis::use_package( "bioimagetools" )
+usethis::use_package( "EBImage" )
 
 ## Add modules ----
 ## Create a module infrastructure in R/

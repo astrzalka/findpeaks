@@ -116,6 +116,7 @@ app_ui <- function(request) {
                                         tabPanel("Image",
                                                  numericInput("frame", "Choose frame", value = 1, step = 1),
                                                  numericInput("channel", "Choose channel", value = 1, step = 1),
+                                                 checkboxInput('display_all', "Display all images?"),
                                                  plotOutput("plot_tiff"))
                                         ),
                             width = 9

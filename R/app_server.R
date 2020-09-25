@@ -215,8 +215,14 @@ app_server <- function( input, output, session ) {
     
     tiff <- image_tiff()
     
-    plot(tiff[,,input$channel,input$frame])
+    if(input$display_all == FALSE){
     
+    plot(tiff[,,input$channel,input$frame])
+    } else {
+      
+      EBImage::display(EBImage::rotate(tiff, angle = 90), method = 'raster', all = TRUE)
+      
+    }
   })
   
   #### Code for analysis of multiple hyphae/strains
