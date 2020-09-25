@@ -198,6 +198,27 @@ app_server <- function( input, output, session ) {
     
   })
   
+  #load tiff file
+  
+  image_tiff <- reactive({
+    
+    inFile <- input$image_file
+    
+    tiff <- bioimagetools::readTIF(inFile$datapath)
+    
+    return(tiff)
+  })
+  
+  #plot tiff
+  
+  output$plot_tiff <- renderPlot({
+    
+    tiff <- image_tiff()
+    
+    plot(tiff[,,input$channel,input$frame])
+    
+  })
+  
   #### Code for analysis of multiple hyphae/strains
   
   

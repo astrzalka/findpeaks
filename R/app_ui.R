@@ -20,7 +20,8 @@ app_ui <- function(request) {
                             checkboxInput('example', 'Do you want to use example dataset?'),
                             fileInput("dane", 'Choose txt file',
                                       accept=c('.txt')),
-                            checkboxInput('header', 'Does your dataset contain headers', value = TRUE)
+                            checkboxInput('header', 'Does your dataset contain headers', value = TRUE),
+                            fileInput("image_file", "Load tiff file (optional)")
                           ),
                           mainPanel(tableOutput('dane_raw'))
                         )
@@ -111,7 +112,12 @@ app_ui <- function(request) {
                                         #tabPanel("Schemat komórki", plotOutput("strzepka", height = 700)),
                                         #tabPanel("Kymograf", plotOutput("kymograf", height = 700)),
                                         #tabPanel("Ridges_plot", plotOutput("ridges", height = 700)),
-                                        tabPanel("Result", tableOutput("tabela"))),
+                                        tabPanel("Result", tableOutput("tabela")),
+                                        tabPanel("Image",
+                                                 numericInput("frame", "Choose frame", value = 1, step = 1),
+                                                 numericInput("channel", "Choose channel", value = 1, step = 1),
+                                                 plotOutput("plot_tiff"))
+                                        ),
                             width = 9
                           )
                         )
@@ -257,7 +263,7 @@ app_ui <- function(request) {
                                                   conditionalPanel(
                                                     condition = "input.kolory_hist == 'custom'",
                                                     textInput('wlasne_kolory_hist', 'Please provide color names for custom scale separated by commas. 
-                                                    Color names should be predefined in R (check:  http://sape.inf.usi.ch/quick-reference/ggplot2/colour) of use
+                                                    Color names should be predefined in R (check:  http://sape.inf.usi.ch/quick-reference/ggplot2/colour) or use
                                                     #FF0000 format'
                                                     )
                                                   ),
@@ -287,7 +293,7 @@ app_ui <- function(request) {
                                                   conditionalPanel(
                                                     condition = "input.kolory_dens == 'custom'",
                                                     textInput('wlasne_kolory_dens', 'Please provide color names for custom scale separated by commas. 
-                                                    Color names should be predefined in R (check:  http://sape.inf.usi.ch/quick-reference/ggplot2/colour) of use
+                                                    Color names should be predefined in R (check:  http://sape.inf.usi.ch/quick-reference/ggplot2/colour) or use
                                                     #FF0000 format'
                                                     )
                                                   ),
@@ -339,7 +345,7 @@ app_ui <- function(request) {
                                                   conditionalPanel(
                                                     condition = "input.kolory == 'custom'",
                                                     textInput('wlasne_kolory', 'Please provide color names for custom scale separated by commas. 
-                                                    Color names should be predefined in R (check:  http://sape.inf.usi.ch/quick-reference/ggplot2/colour) of use
+                                                    Color names should be predefined in R (check:  http://sape.inf.usi.ch/quick-reference/ggplot2/colour) or use
                                                     #FF0000 format'
                                                     )
                                                   ),
@@ -373,7 +379,7 @@ app_ui <- function(request) {
                                                   conditionalPanel(
                                                     condition = "input.kolory_scatter == 'custom'",
                                                     textInput('wlasne_kolory_scatter', 'Please provide color names for custom scale separated by commas. 
-                                                    Color names should be predefined in R (check:  http://sape.inf.usi.ch/quick-reference/ggplot2/colour) of use
+                                                    Color names should be predefined in R (check:  http://sape.inf.usi.ch/quick-reference/ggplot2/colour) or use
                                                     #FF0000 format'
                                                     )
                                                   ),
@@ -396,7 +402,7 @@ app_ui <- function(request) {
                                  ),
                                  downloadButton('download_plot', 'Download plot'),
                                  numericInput('width_plot', 'Width [cm]', 20, min = 5, max = 25),
-                                 numericInput('height_plot', 'Heigth [cm]', 14, min = 5, max = 25),
+                                 numericInput('height_plot', 'Height [cm]', 14, min = 5, max = 25),
                                  numericInput('res_plot', 'Resolution', 200, min = 100, max = 500)
                                  
                           )

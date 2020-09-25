@@ -26,7 +26,7 @@ usethis::use_package( "shinythemes" )
 usethis::use_package( "magrittr" )
 usethis::use_package( "Hmisc" )
 usethis::use_package( "EDA" )
-
+usethis::use_package( "bioimagetools" )
 
 ## Add modules ----
 ## Create a module infrastructure in R/

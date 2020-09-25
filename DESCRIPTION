@@ -25,7 +25,9 @@ Imports:
     shinythemes,
     magrittr,
     Hmisc,
-    EDA
+    EDA,
+    tiff,
+    bioimagetools
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1
