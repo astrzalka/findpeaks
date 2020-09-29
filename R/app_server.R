@@ -5,6 +5,9 @@
 #' @import shiny
 #' @import ggpubr
 #' @noRd
+
+options(shiny.maxRequestSize=30*1024^2) 
+
 app_server <- function( input, output, session ) {
   # List the first level callModules here
   
@@ -68,7 +71,7 @@ app_server <- function( input, output, session ) {
   wynik <- reactive({
     
     x <- find_peaks(dane(), s = input$sigma, procent = input$procent, m = as.logical(input$markov), 
-                    threshold = input$threshold, lapse = input$lapse)
+                    threshold = input$threshold, lapse = input$lapse, back = input$background)
     #     print('nie')
     #     print(nrow(x[[1]]))
     #    
@@ -217,10 +220,12 @@ app_server <- function( input, output, session ) {
     
     if(input$display_all == FALSE){
     
-    plot(tiff[,,input$channel,input$frame])
+    pixmap::plot(tiff[,,input$channel,input$frame]*(1/mean(tiff[,,input$channel,])))
     } else {
       
-      EBImage::display(EBImage::rotate(tiff, angle = 90), method = 'raster', all = TRUE)
+      norm <- (1/mean(tiff[,,input$channel,])/2)
+      
+      EBImage::display(EBImage::rotate(tiff[,,input$channel,]*norm, angle = 90), method = 'raster', all = TRUE)
       
     }
   })

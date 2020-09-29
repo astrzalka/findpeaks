@@ -32,13 +32,20 @@ find_peaks <- function (ramka, s = 2, m = FALSE, procent = 1, threshold=10,
     baza <- modeest::mlv(x[,2], method="shorth")
     # jaki procent tła ma odjąć
     baza2 <- baza[[1]] * procent
-    # odejmujemy wartość baseline od intensywności i dzielimy przez baseline
-    x[,2]<-(x[,2]-baza2[1])/baza2[1]
-    #zamieniamy wartości ujemne na zera
-    x[,2]<-replace(x[,2], x[,2]<0, 0)
     
+    if(back == FALSE){
+      # odejmujemy wartość baseline od intensywności i dzielimy przez baseline
+      x[,2]<-(x[,2]-baza2[1])/baza2[1]
+      #zamieniamy wartości ujemne na zera
+      x[,2]<-replace(x[,2], x[,2]<0, 0)
+    }
     # szukanie pików
     piki<-Peaks::SpectrumSearch(x[,2], sigma=s, markov=m, threshold=threshold, background=back)
+    
+    if(back == TRUE){
+      x[,2] <- x[,2] - min(x[,2])
+    }
+    
     # rysuje wykres z zaznaczonymi pikami, jeżeli plot == TRUE
     if (length(piki[[1]]) > 0){
       # przygotowuje tabelę z wynikami

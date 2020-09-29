@@ -44,6 +44,7 @@ app_ui <- function(request) {
                             radioButtons("markov", "Should markov fitting be used", 
                                          choices = list("TRUE" = "TRUE", "FALSE" = "FALSE"),
                                          selected = "TRUE", inline = TRUE),
+                            checkboxInput("background", "Remove background?", value = FALSE),
                             numericInput("lapse", "Time lapse (min)", 
                                          value = 10),
                             conditionalPanel('input.rodzaj_wykres == "wszystko"',
