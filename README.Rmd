@@ -19,37 +19,21 @@ knitr::opts_chunk$set(
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 <!-- badges: end -->
 
-The goal of findpeaks is to ...
+The goal of findpeaks is to find maxima in fluorescence profile generated from microscopic time-lapse movie of Streptomyces
 
 ## Installation
 
-You can install the released version of findpeaks from [CRAN](https://CRAN.R-project.org) with:
+You can install the released version of EDA from Github:
 
 ``` r
-install.packages("findpeaks")
+devtools::install_github('astrzalka/findpeaks')
+
+findpeaks::run_app()
+```
+For running the app package Peaks in required. It can be installed on linux using:
+
+``` r
+devtools::install_version('Peaks', version = '0.2', repos = "http://cran.us.r-project.org")
 ```
 
-## Example
-
-This is a basic example which shows you how to solve a common problem:
-
-```{r example}
-library(findpeaks)
-## basic example code
-```
-
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
-
-```{r cars}
-summary(cars)
-```
-
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date.
-
-You can also embed plots, for example:
-
-```{r pressure, echo = FALSE}
-plot(pressure)
-```
-
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub!
+Fluorescence profile data can be prepared using an ImageJ script: imagej_get_profile.ijm , which will save the profiles for all selected ROIs for each channel separately. It will also save ROIs and duplicated tiff file of analyzed hypha in the same directory. 
