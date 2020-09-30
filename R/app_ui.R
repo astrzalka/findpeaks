@@ -418,12 +418,26 @@ app_ui <- function(request) {
                         )
                ),
                tabPanel('Help',
-                        p("findpeaks looks for maxima in fluorescence profile generated from time-lapse microscopic movie."),
-                        p("Background signal can be removed completely or partially. Additional smoothing can be achieved using Markov chain method. 
-                          Then fluorescence signal is deconvolved using Gaussian with sigma value provided by the user.
-                          Peaks below given threshold (%) are removed form analysis"),
-                        p("Results can be saved in txt format for further analysis in the application or other program."),
+                        p("findpeaks looks for maxima in fluorescence profiles generated from time-lapse microscopic movie."),
+                        p('Data file should be in txt format and contain two columns: Length of measured hypha and fluorescence intensity. 
+                          It can also contain optional first column with numerical index, which will be automatically removed during analysis.
+                          Data file can be generated using an ImageJ script available at the Github page :'),
+                        tags$a(
+                          id = 'mydiv',
+                          href = "https://github.com/astrzalka/findpeaks", "findpeaks"
+                        ),
+                        p(' '),
+                        p("Background signal can be removed completely or partially depending on the image preprocessing.
                         
+                        Removal of background signal will not affect the fluorescence intesity of peaks in the results file."),
+                        p('Peaks are identified after signal deconvolution using Gaussian with sigma value provided by the user. 
+                          Higher sigma value result in broader peaks'),
+                        p('Additional smoothing before denconvolution can be achieved using the Markov chain method.'), 
+                        p('Peaks below a given threshold (%) are removed from the analysis. The threshold is calculated for each timepoint separately.'),
+                        p('Erroneously detected peaks can also be removed manually'),
+                        p('All chosen values of parameters are saved in the results.'),
+                        p("Results can be saved in txt format for further analysis in the application or in another program."),
+                        p(' '),
                         p("Application is based upon Peaks package:"),
                         p("Miroslav Morhac (2012). Peaks: Peaks. R package version 0.2.
   https://CRAN.R-project.org/package=Peaks"))
