@@ -4,6 +4,7 @@
 #'     DO NOT REMOVE.
 #' @import shiny
 #' @import ggpubr
+#' @import rtiff
 #' @noRd
 
 options(shiny.maxRequestSize=30*1024^2) 
@@ -88,18 +89,18 @@ app_server <- function( input, output, session ) {
     #       }
     
     
-    x[[1]]$komorka <- input$id
-    x[[1]]$szczep <- input$szczep
+    x[[1]]$cell <- input$id
+    x[[1]]$strain <- input$szczep
     
     usun_kompleksy <- sub(' ', '', unlist(stringr::str_split(input$usun, ',')))
     
     x[[1]] <- subset(x[[1]], !(id %in% usun_kompleksy))
-    x[[1]]$parametry <- paste(input$sigma, input$procent, input$threshold, input$markov,
+    x[[1]]$parameters <- paste(input$sigma, input$procent, input$threshold, input$markov,
                               input$usun, sep = '_')
     
-    x[[1]] %>% dplyr::arrange(czas, dist_tip) %>%
-      dplyr::group_by(czas) %>%
-      dplyr::mutate(dist_pom = dist_tip - dplyr::lag(dist_tip),
+    x[[1]] %>% dplyr::arrange(time, dist_tip) %>%
+      dplyr::group_by(time) %>%
+      dplyr::mutate(dist_between = dist_tip - dplyr::lag(dist_tip),
                     n_chrom = dplyr::n(),
                     numer_chrom = 1:dplyr::n()) -> x[[1]]
     
@@ -117,8 +118,8 @@ app_server <- function( input, output, session ) {
     dane_2 <- wyn[[2]]
     dane_1 <- wyn[[1]]
     
-    dane_2 %>% dplyr::filter(czas >= input$filtr_czas[1], czas <= input$filtr_czas[2]) -> dane_2
-    dane_1 %>% dplyr::filter(czas >= input$filtr_czas[1], czas <= input$filtr_czas[2]) -> dane_1
+    dane_2 %>% dplyr::filter(time >= input$filtr_czas[1], time <= input$filtr_czas[2]) -> dane_2
+    dane_1 %>% dplyr::filter(time >= input$filtr_czas[1], time <= input$filtr_czas[2]) -> dane_1
     
     p <- plot_find_peaks(dane_2, dane_1)
     
@@ -249,36 +250,36 @@ app_server <- function( input, output, session ) {
     
     dane %>% dplyr::filter(numer_chrom <= input$n_kompl) -> dane
     
-    if(input$summ_type == 'szczep'){
+    if(input$summ_type == 'strain'){
       
       dane %>%
-        dplyr::group_by(szczep) -> dane
+        dplyr::group_by(strain) -> dane
       
-      dane %>% dplyr::group_by(szczep, komorka) %>%
-        dplyr::summarise(dlugosc = max(dlug),
-                         czas = max(czas)) %>%
-        dplyr::group_by(szczep) %>%
-        dplyr::summarise(max_dlugosc = mean(dlugosc),
-                         max_czas = mean(czas)) -> dane_podsum_3
+      dane %>% dplyr::group_by(strain, cell) %>%
+        dplyr::summarise(length = max(length),
+                         time = max(time)) %>%
+        dplyr::group_by(strain) %>%
+        dplyr::summarise(max_length = mean(length),
+                         max_time = mean(time)) -> dane_podsum_3
       
     } else if(input$summ_type == 'hyphae'){
       
       dane %>%
-        dplyr::group_by(szczep, komorka) -> dane
+        dplyr::group_by(strain, cell) -> dane
       
-      dane %>% dplyr::group_by(szczep, komorka) %>%
-        dplyr::summarise(max_dlugosc = max(dlug),
-                         max_czas = max(czas)) -> dane_podsum_3 
+      dane %>% dplyr::group_by(strain, cell) %>%
+        dplyr::summarise(max_length = max(length),
+                         max_time = max(time)) -> dane_podsum_3 
     } else if(input$summ_type == 'komp'){
       
-      dane %>% dplyr::group_by(szczep, numer_chrom) -> dane
+      dane %>% dplyr::group_by(strain, numer_chrom) -> dane
       
-      dane %>% dplyr::group_by(szczep, komorka) %>%
-        dplyr::summarise(dlugosc = max(dlug),
-                         czas = max(czas)) %>%
-        dplyr::group_by(szczep) %>%
-        dplyr::summarise(max_dlugosc = mean(dlugosc),
-                         max_czas = mean(czas)) -> dane_podsum_3
+      dane %>% dplyr::group_by(strain, cell) %>%
+        dplyr::summarise(length = max(length),
+                         time = max(time)) %>%
+        dplyr::group_by(strain) %>%
+        dplyr::summarise(max_length = mean(length),
+                         max_time = mean(time)) -> dane_podsum_3
       
     }
     
@@ -286,11 +287,11 @@ app_server <- function( input, output, session ) {
                               sd_dist_tip = sd(dist_tip),
                               # mean_dist_base = mean(dist_base),
                               # sd_dist_base = sd(dist_base),
-                              mean_dist_pom = mean(dist_pom, na.rm = TRUE),
-                              sd_dist_pom = sd(dist_pom, na.rm = TRUE),
+                              mean_dist_between = mean(dist_between, na.rm = TRUE),
+                              sd_dist_between = sd(dist_between, na.rm = TRUE),
                               n = dplyr::n()) -> dane_podsum
     
-    dane %>% dplyr::distinct(szczep, komorka, indeks, .keep_all = TRUE) %>%
+    dane %>% dplyr::distinct(strain, cell, index, .keep_all = TRUE) %>%
       dplyr::summarise(mean_n_chrom = mean(n_chrom)) -> dane_podsum_2
     
     dane_podsum %>% dplyr::left_join(dane_podsum_2) %>% dplyr::left_join(dane_podsum_3) -> 

@@ -33,7 +33,7 @@ find_peaks <- function (ramka, s = 2, m = FALSE, procent = 1, threshold=10,
     # jaki procent tła ma odjąć
     baza2 <- baza[[1]] * procent
     
-    if(back == FALSE){
+    if(back == FALSE & procent != 0){
       # odejmujemy wartość baseline od intensywności i dzielimy przez baseline
       x[,2]<-(x[,2]-baza2[1])/baza2[1]
       #zamieniamy wartości ujemne na zera
@@ -52,26 +52,26 @@ find_peaks <- function (ramka, s = 2, m = FALSE, procent = 1, threshold=10,
       wynik<-miejsca<-data.frame(dist_base=max(x[,1])-x[piki[[1]],1], # odległość od podstawy strzępki
                                  dist_tip =x[piki[[1]],1], # odległość od tipa
                                  int_raw = x1[piki[[1]],2],
-                                 int_nor=round((x1[piki[[1]],2]-baza[[1]])/baza[[1]]), # intensywność fluorescencji zaokrąglona do liczby całkowitej
-                                 dlug = max(x[,1]), # długość strzępki
-                                 indeks = i,
-                                 tlo = baza[[1]],
-                                 tlo_nor = baza2[1],
-                                 czas = (i * lapse)-lapse) # kolejna klatka
+                                 #int_nor=round((x1[piki[[1]],2]-baza[[1]])/baza[[1]]), # intensywność fluorescencji zaokrąglona do liczby całkowitej
+                                 length = max(x[,1]), # długość strzępki
+                                 index = i,
+                                 #tlo = baza[[1]],
+                                 #tlo_nor = baza2[1],
+                                 time = (i * lapse)-lapse) # kolejna klatka
     } else { wynik <- NULL}
     # jeżeli obrót pętli inny niż jeden to dopisujemy wyniki do poprzednich
     if (i == 1){ wynik_kon = wynik
-    wynik2 = data.frame(y = piki[[2]], czas = (i * lapse)-lapse, x = x$V1, int = x$V2)
+    wynik2 = data.frame(y = piki[[2]], time = (i * lapse)-lapse, x = x$V1, int = x$V2)
     } else {
       wynik_kon <-rbind(wynik_kon, wynik)
-      dane <- data.frame(y = piki[[2]], czas = (i * lapse)-lapse, x = x$V1, int = x$V2)
+      dane <- data.frame(y = piki[[2]], time = (i * lapse)-lapse, x = x$V1, int = x$V2)
       wynik2 <- rbind(wynik2, dane)
     }
     
   }
   
   # sortuje wyniki najpierw według klatek, potem według odległości od tipa
-  wynik_kon <- dplyr::arrange(wynik_kon, indeks, dist_tip) %>%
+  wynik_kon <- dplyr::arrange(wynik_kon, index, dist_tip) %>%
     dplyr::mutate(id = 1:dplyr::n()) 
   # zwraca wynik
   return(list(wynik = wynik_kon, wynik2 = wynik2))
@@ -89,36 +89,36 @@ find_peaks <- function (ramka, s = 2, m = FALSE, procent = 1, threshold=10,
 #'
 #' @examples
 wykres_str <- function (wynik, int = c("int_nor","int_raw"), zaznacz=FALSE, size = TRUE) {
-  p<-ggplot(data=wynik, aes(y=dist_base, x=indeks))
+  p<-ggplot(data=wynik, aes(y=dist_base, x=index))
   if ( zaznacz == TRUE){    
     if (int == "int_raw"){
-      test <- arrange(wynik, indeks, desc(int_raw))
-      test <- test %>% group_by(indeks) %>% mutate(order=order(int_raw, decreasing=T))
+      test <- arrange(wynik, index, desc(int_raw))
+      test <- test %>% group_by(index) %>% mutate(order=order(int_raw, decreasing=T))
       test<-subset(test, order == 1)
       
-      p<-p+geom_bar(aes(x=indeks, y=dlug), stat="identity", fill="snow3", color="black", 
+      p<-p+geom_bar(aes(x=index, y=length), stat="identity", fill="snow3", color="black", 
                     position="dodge", width=0.4)+
         geom_point(color="green3", aes(size=int_raw))+
-        geom_point(data=test, aes(x=indeks, y=dist_base),color="red3", shape=4, size=5)+
+        geom_point(data=test, aes(x=index, y=dist_base),color="red3", shape=4, size=5)+
         scale_size_continuous(range=c(1,6))
       print(p)
     }
     if (int == "int_nor"){
-      test <- arrange(wynik, indeks, desc(int_nor))
-      test <- test %>% group_by(indeks) %>% mutate(order=order(int_nor, decreasing=T))
+      test <- arrange(wynik, index, desc(int_nor))
+      test <- test %>% group_by(index) %>% mutate(order=order(int_nor, decreasing=T))
       test<-subset(test, order == 1)
       
-      p<-p+geom_bar(aes(x=indeks, y=dlug), stat="identity", fill="snow3", color="black", 
+      p<-p+geom_bar(aes(x=index, y=length), stat="identity", fill="snow3", color="black", 
                     position="dodge", width=0.4)+
         geom_point(color="green3", aes(size=factor(int_nor)))+
-        geom_point(data=test, aes(x=indeks, y=dist_base),color="red3", shape=4, size=5)+
+        geom_point(data=test, aes(x=index, y=dist_base),color="red3", shape=4, size=5)+
         scale_size_discrete(range=c(1,6))
       print(p)
     }
   }else{
     
     if (int == "int_raw"){
-      p<-p+geom_bar(aes(x=indeks, y=dlug), stat="identity", fill="snow3", color="black", 
+      p<-p+geom_bar(aes(x=index, y=length), stat="identity", fill="snow3", color="black", 
                     position="dodge", width=0.4)+
         geom_point(color="green3", aes(size=int_raw))+
         scale_size_continuous(range=c(1,6))
@@ -129,17 +129,17 @@ wykres_str <- function (wynik, int = c("int_nor","int_raw"), zaznacz=FALSE, size
       if ( size == TRUE){
         wynik$int_nor <- factor(wynik$int_nor, levels=c(0:36))
         
-        p<-ggplot(data=wynik, aes(y=dist_base, x=indeks))
+        p<-ggplot(data=wynik, aes(y=dist_base, x=index))
         
-        p<-p+geom_bar(aes(x=indeks, y=dlug), stat="identity", fill="snow3", color="black", 
+        p<-p+geom_bar(aes(x=index, y=length), stat="identity", fill="snow3", color="black", 
                       position="dodge", width=0.4)+
           geom_point(color="green3", aes(size=int_nor))+
           scale_size_manual(values=seq(3, 12, by=(7/37)))
       } else {
         
-        p<-ggplot(data=wynik, aes(y=dist_base, x=indeks))
+        p<-ggplot(data=wynik, aes(y=dist_base, x=index))
         
-        p<-p+geom_bar(aes(x=indeks, y=dlug), stat="identity", fill="snow3", color="black", 
+        p<-p+geom_bar(aes(x=index, y=length), stat="identity", fill="snow3", color="black", 
                       position="dodge", width=0.4)+
           geom_point( aes(color=int_nor), size=4)+scale_colour_gradient(low="darkgreen", high="yellow")
       }
@@ -184,12 +184,12 @@ dodaj_ind<-function(dane){
 #' @examples
 plot_find_peaks <- function(dane_raw, dane_find){
   
-  dane_raw %>% dplyr::group_by(czas) %>%
-    dplyr::summarise(maksimum = max(y)) %>% dplyr::right_join(dane_find, by = 'czas') -> dane_find2
+  dane_raw %>% dplyr::group_by(time) %>%
+    dplyr::summarise(maksimum = max(y)) %>% dplyr::right_join(dane_find, by = 'time') -> dane_find2
   
   p <- ggplot2::ggplot(dane_raw)
   p <- p+ggplot2::geom_line(ggplot2::aes(x = x, y = y), color = "red")+
-    ggplot2::facet_wrap(~czas, scales = "free", ncol = 4)+
+    ggplot2::facet_wrap(~time, scales = "free", ncol = 3)+
     ggplot2::geom_line(ggplot2::aes(x = x, y = int))+
     ggplot2::theme_bw()+
     ggplot2::geom_point(data = dane_find, ggplot2::aes(x = dist_tip, y = 1), 
@@ -213,12 +213,12 @@ plot_find_peaks <- function(dane_raw, dane_find){
 plot_scheme_find_peaks <- function(dane_find, odwroc = TRUE, color_point = 'red'){
   
   if(as.logical(odwroc == TRUE)){
-    p <- ggplot2::ggplot(dane_find,  ggplot2::aes(y=dist_tip, x=czas))
+    p <- ggplot2::ggplot(dane_find,  ggplot2::aes(y=dist_tip, x=time))
   } else {
-    p <- ggplot2::ggplot(dane_find,  ggplot2::aes(y=dist_base, x=czas))
+    p <- ggplot2::ggplot(dane_find,  ggplot2::aes(y=dist_base, x=time))
   }
   
-  p <- p + ggplot2::geom_bar(ggplot2::aes(x=czas, y=dlug), stat="identity", fill="snow3", color="black", 
+  p <- p + ggplot2::geom_bar(ggplot2::aes(x=time, y=length), stat="identity", fill="snow3", color="black", 
                              position="dodge", width=5)+
     ggplot2::geom_point(color=color_point, ggplot2::aes(size=int_raw))+
     ggplot2::scale_size_continuous(range=c(1,6), "Fluorescence\nintensity")+
@@ -275,10 +275,10 @@ plot_kymograph_find_peaks <- function(dane_raw, dane_find, odwroc = TRUE, pokaz 
   
   if(as.logical(pokaz) == TRUE){
     if(as.logical(odwroc == TRUE)){
-      p <- p + ggplot2::geom_point(data = dane_find, ggplot2::aes(x = (indeks*lapse), y = dist_tip), 
+      p <- p + ggplot2::geom_point(data = dane_find, ggplot2::aes(x = (index*lapse), y = dist_tip), 
                                    color = color_point, size = 3)
     } else {
-      p <- p + ggplot2::geom_point(data = dane_find, ggplot2::aes(x = (indeks*lapse), y = dist_base), 
+      p <- p + ggplot2::geom_point(data = dane_find, ggplot2::aes(x = (index*lapse), y = dist_base), 
                                    color = color_point, size = 3)
     }
   }
@@ -341,8 +341,8 @@ plot_peaks_ridges <- function(data, scale = 'osobno', gradient = TRUE, skala = 2
   }
   
   p <- p + ggridges::theme_ridges()+
-    ggplot2::xlab('Długość komórki')+
-    ggplot2::ylab("Czas")
+    ggplot2::xlab('Length')+
+    ggplot2::ylab("Time")
   
   return(p)
   
