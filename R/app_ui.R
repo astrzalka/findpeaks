@@ -3,6 +3,7 @@
 #' @param request Internal parameter for `{shiny}`. 
 #'     DO NOT REMOVE.
 #' @import shiny
+#' @import colourpicker
 #' @noRd
 app_ui <- function(request) {
   tagList(
@@ -63,20 +64,24 @@ app_ui <- function(request) {
                             ),
                             conditionalPanel('input.rodzaj_wykres == "schemat" |
                                                         input.rodzaj_wykres == "kymograf"',
-                                             selectInput("punkt", "Choose point color",
-                                                         choices = list(czerwony = "red", 
-                                                                        zielony = "green3", 
-                                                                        niebieski = "blue", 
-                                                                        żółty = "yellow"), 
-                                                         selected = "red")
+                                             # selectInput("punkt", "Choose point color",
+                                             #             choices = list(czerwony = "red", 
+                                             #                            zielony = "green3", 
+                                             #                            niebieski = "blue", 
+                                             #                            żółty = "yellow"), 
+                                             #             selected = "red")
+                                             colourInput("punkt", "Choose point colour",
+                                                         "red")
                             ),
                             conditionalPanel(condition = 'input.rodzaj_wykres == "kymograf"',
-                                             selectInput("gradient", "Choose gradient color", 
-                                                         choices = list(czerwony = "red", 
-                                                                        zielony = "green", 
-                                                                        niebieski = "skyblue", 
-                                                                        żółty = "yellow"), 
-                                                         selected = "green"),
+                                             # selectInput("gradient", "Choose gradient color", 
+                                             #             choices = list(czerwony = "red", 
+                                             #                            zielony = "green", 
+                                             #                            niebieski = "skyblue", 
+                                             #                            żółty = "yellow"), 
+                                             #             selected = "green"),
+                                             colourInput("gradient", "Choose gradient colour",
+                                                         "green3"),
                                              radioButtons("pokaz", "Show found maximas on the kymograph?", 
                                                           choices = list("TRUE" = "TRUE", "FALSE" = "FALSE"), selected = "TRUE",
                                                           inline = TRUE)
@@ -409,7 +414,17 @@ app_ui <- function(request) {
                                  
                           )
                         )
-               )
+               ),
+               tabPanel('Help',
+                        p("findpeaks looks for maxima in fluorescence profile generated from time-lapse microscopic movie."),
+                        p("Background signal can be removed completely or partially. Additional smoothing can be achieved using Markov chain method. 
+                          Then fluorescence signal is deconvolved using Gaussian with sigma value provided by the user.
+                          Peaks below given threshold (%) are removed form analysis"),
+                        p("Results can be saved in txt format for further analysis in the application or other program."),
+                        
+                        p("Application is based upon Peaks package:"),
+                        p("Miroslav Morhac (2012). Peaks: Peaks. R package version 0.2.
+  https://CRAN.R-project.org/package=Peaks"))
                
     )
   )

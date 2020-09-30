@@ -29,6 +29,7 @@ usethis::use_package( "EDA" )
 usethis::use_package( "bioimagetools" )
 usethis::use_package( "EBImage" )
 usethis::use_package( "pixmap" )
+usethis::use_package( "colourpicker" )
 
 ## Add modules ----
 ## Create a module infrastructure in R/
