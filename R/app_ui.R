@@ -159,7 +159,7 @@ app_ui <- function(request) {
                                                                              'Fluorescence intensity' = 'int_raw')),
                                                   selectInput('color_hist', "Color",
                                                               choices = list('Strains' = 'strain',
-                                                                             'Complex' = 'numer_chrom',
+                                                                             'Complex' = 'number_comp',
                                                                              'Hyphae' = 'cell'))
                                  ),
                                  
@@ -168,7 +168,7 @@ app_ui <- function(request) {
                                  conditionalPanel(condition = 'input.rodzaj_wykres_summ == "box"',
                                                   selectInput('os_x_box', 'Choose variable for X axis',
                                                               choices = list('Strain' = 'strain',
-                                                                             'Complex' = 'numer_chrom',
+                                                                             'Complex' = 'number_comp',
                                                                              'Time' = 'time')),
                                                   selectInput('os_y_box', 'Choose variable for Y axis',
                                                               choices = list('Distance to the tip' = 'dist_tip',
@@ -184,8 +184,8 @@ app_ui <- function(request) {
                                                                              "Distance to the base" = 'dist_base',
                                                                              "Distance between complexes" = 'dist_between',
                                                                              "Fluorescence intensity" = 'int_raw',
-                                                                             "Number of complexes" = 'n_chrom',
-                                                                             'Complex' = 'numer_chrom')),
+                                                                             "Number of complexes" = 'n_comp',
+                                                                             'Complex' = 'number_comp')),
                                                   selectInput('os_y_scatter', 'Choose variable for Y axis',
                                                               choices = list('Time' = 'time',
                                                                              "Hyphae length" = 'length',
@@ -193,8 +193,8 @@ app_ui <- function(request) {
                                                                              "Distance to the base" = 'dist_base',
                                                                              "Distance between complexes" = 'dist_between',
                                                                              "Fluorescence intensity" = 'int_raw',
-                                                                             "Number of complexes" = 'n_chrom',
-                                                                             'Complex' = 'numer_chrom'),
+                                                                             "Number of complexes" = 'n_comp',
+                                                                             'Complex' = 'number_comp'),
                                                               selected = 'dist_tip'),
                                                   selectInput('os_color_scatter', 'Variable for color scale',
                                                               choices = list("none" = 'brak',
@@ -206,14 +206,14 @@ app_ui <- function(request) {
                                                                              "Distance to the base" = 'dist_base',
                                                                              "Distance between complexes" = 'dist_between',
                                                                              "Fluorescence intensity" = 'int_raw',
-                                                                             "Number of complexes" = 'n_chrom',
-                                                                             'Complex' = 'numer_chrom')),
+                                                                             "Number of complexes" = 'n_comp',
+                                                                             'Complex' = 'number_comp')),
                                                   selectInput('os_facet_scatter', 'Divide into facets',
                                                               choices = list("none" = 'brak',
                                                                              "Strain" = 'strain',
                                                                              "Hyphae" = 'cell',
-                                                                             "Number of complexes" = 'n_chrom',
-                                                                             'Complex' = 'numer_chrom'))
+                                                                             "Number of complexes" = 'n_comp',
+                                                                             'Complex' = 'number_comp'))
                                                   
                                  ),
                                  
@@ -435,10 +435,11 @@ app_ui <- function(request) {
                         p('Additional smoothing before denconvolution can be achieved using the Markov chain method.'), 
                         p('Peaks below a given threshold (%) are removed from the analysis. The threshold is calculated for each timepoint separately.'),
                         p('Erroneously detected peaks can also be removed manually'),
-                        p('All chosen values of parameters are saved in the results.'),
+                        p('All chosen values of parameters are saved in the results. Hypha id and strain name can also be set.'),
                         p("Results can be saved in txt format for further analysis in the application or in another program."),
                         p(' '),
-                        p("Application is based upon Peaks package:"),
+                        p('For results analysis multiple txt files (also from different strains) can be uploaded and common plots such as: histogram, density, boxplot, scatterplot can be created.'),
+                        p(strong("Application is based upon Peaks package:")),
                         p("Miroslav Morhac (2012). Peaks: Peaks. R package version 0.2.
   https://CRAN.R-project.org/package=Peaks"))
                

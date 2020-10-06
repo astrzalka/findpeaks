@@ -101,8 +101,8 @@ app_server <- function( input, output, session ) {
     x[[1]] %>% dplyr::arrange(time, dist_tip) %>%
       dplyr::group_by(time) %>%
       dplyr::mutate(dist_between = dist_tip - dplyr::lag(dist_tip),
-                    n_chrom = dplyr::n(),
-                    numer_chrom = 1:dplyr::n()) -> x[[1]]
+                    n_comp = dplyr::n(),
+                    number_comp = 1:dplyr::n()) -> x[[1]]
     
     return(x)
     
@@ -248,7 +248,7 @@ app_server <- function( input, output, session ) {
     
     dane <- dane_porownanie()
     
-    dane %>% dplyr::filter(numer_chrom <= input$n_kompl) -> dane
+    dane %>% dplyr::filter(number_comp <= input$n_kompl) -> dane
     
     if(input$summ_type == 'strain'){
       
@@ -272,7 +272,7 @@ app_server <- function( input, output, session ) {
                          max_time = max(time)) -> dane_podsum_3 
     } else if(input$summ_type == 'komp'){
       
-      dane %>% dplyr::group_by(strain, numer_chrom) -> dane
+      dane %>% dplyr::group_by(strain, number_comp) -> dane
       
       dane %>% dplyr::group_by(strain, cell) %>%
         dplyr::summarise(length = max(length),
@@ -292,7 +292,7 @@ app_server <- function( input, output, session ) {
                               n = dplyr::n()) -> dane_podsum
     
     dane %>% dplyr::distinct(strain, cell, index, .keep_all = TRUE) %>%
-      dplyr::summarise(mean_n_chrom = mean(n_chrom)) -> dane_podsum_2
+      dplyr::summarise(mean_n_comp = mean(n_comp)) -> dane_podsum_2
     
     dane_podsum %>% dplyr::left_join(dane_podsum_2) %>% dplyr::left_join(dane_podsum_3) -> 
       dane_podsum
@@ -310,7 +310,7 @@ app_server <- function( input, output, session ) {
     
     wb <- dane_porownanie()
     
-    wb %>% dplyr::filter(numer_chrom <= input$n_kompl) -> wb
+    wb %>% dplyr::filter(number_comp <= input$n_kompl) -> wb
     
     if(input$bin == 0){
       
@@ -339,7 +339,7 @@ app_server <- function( input, output, session ) {
   densityInput <- reactive({
     wb <- dane_porownanie()
     
-    wb %>% dplyr::filter(numer_chrom <= input$n_kompl) -> wb
+    wb %>% dplyr::filter(number_comp <= input$n_kompl) -> wb
     
     p <- EDA::draw_density(wb = wb,
                            variable = input$os_x_hist,
@@ -361,7 +361,7 @@ app_server <- function( input, output, session ) {
     wb <- dane_porownanie()
     
     
-    wb %>% dplyr::filter(numer_chrom <= input$n_kompl) -> wb
+    wb %>% dplyr::filter(number_comp <= input$n_kompl) -> wb
     wb <- as.data.frame(wb)
     
     p <- EDA::draw_boxplot(wb = wb,
@@ -389,8 +389,8 @@ app_server <- function( input, output, session ) {
   scatterInput <- reactive({
     
     wb <- dane_porownanie()
-    wb %>% dplyr::filter(numer_chrom <= input$n_kompl) %>%
-      dplyr::mutate(numer_chrom = factor(numer_chrom))-> wb
+    wb %>% dplyr::filter(number_comp <= input$n_kompl) %>%
+      dplyr::mutate(number_comp = factor(number_comp))-> wb
     
     p <- EDA::draw_scatter(wb = wb,
                            x_var = input$os_x_scatter,
@@ -432,8 +432,8 @@ app_server <- function( input, output, session ) {
     
     dane <- dane_porownanie()
     
-    dane %>% dplyr::filter(numer_chrom <= input$n_kompl) %>%
-      dplyr::mutate(numer_chrom = factor(numer_chrom))-> dane
+    dane %>% dplyr::filter(number_comp <= input$n_kompl) %>%
+      dplyr::mutate(number_comp = factor(number_comp))-> dane
     
     grupy <- colnames(dane)
     
@@ -565,7 +565,7 @@ app_server <- function( input, output, session ) {
   
   dane_download <- reactive({
     wb <- dane_porownanie()
-    wb %>% dplyr::filter(numer_chrom <= input$n_kompl) -> wb
+    wb %>% dplyr::filter(number_comp <= input$n_kompl) -> wb
     return(wb)
   })
   
