@@ -311,7 +311,9 @@ app_ui <- function(request) {
                                  ),
                                  conditionalPanel(condition = 'input.rodzaj_wykres_summ == "box"',
                                                   radioButtons('boxviolin', 'Choose plot type?', 
-                                                               c('Boxplot' = 'Boxplot', 'Violin' = 'Violin', 'Mean with confidence interval' = 'mean_ci'), 
+                                                               c('Boxplot' = 'Boxplot', 'Violin' = 'Violin'
+                                                                 #, 'Mean with confidence interval' = 'mean_ci'
+                                                                 ), 
                                                                inline = TRUE),
                                                   radioButtons('porownanie', 'Choose comparison type', 
                                                                list('none' = 'brak', 'Only against control' = 'kontrola', 
