@@ -60,7 +60,7 @@ app_server <- function( input, output, session ) {
   #     
   #     print(c('test ', ile$i))
   #     } else {
-  #       print('brak')
+  #       print('none')
   #     }
   #     
   #   })
@@ -442,12 +442,12 @@ app_server <- function( input, output, session ) {
     
     numery <- c(numer_1, numer_2)
     
-    if(input$os_color_scatter != 'brak'){
+    if(input$os_color_scatter != 'none'){
       numer_3 <- which(grupy == input$os_color_scatter)
       numery <- c(numery, numer_3)
     }
     
-    if(input$os_facet_scatter != 'brak'){
+    if(input$os_facet_scatter != 'none'){
       numer_4 <- which(grupy == input$os_facet_scatter)
       numery <- c(numery, numer_4)
     }
@@ -465,25 +465,25 @@ app_server <- function( input, output, session ) {
     
     # nazwy <- c('x', 'y')
     
-    if(input$os_color_scatter == 'brak' & input$os_facet_scatter == 'brak'){
+    if(input$os_color_scatter == 'none' & input$os_facet_scatter == 'none'){
       colnames(dane) <- c('x', 'y')
       
       dane %>% tidyr::nest(data = tidyr::everything()) -> nested
     }
     
-    if(input$os_color_scatter != 'brak' & input$os_facet_scatter == 'brak'){
+    if(input$os_color_scatter != 'none' & input$os_facet_scatter == 'none'){
       colnames(dane) <- c('x', 'y', 'grupa1')
       
       dane %>% tidyr::nest(data = -grupa1) -> nested
     }
     
-    if(input$os_color_scatter == 'brak' & input$os_facet_scatter != 'brak'){
+    if(input$os_color_scatter == 'none' & input$os_facet_scatter != 'none'){
       colnames(dane) <- c('x', 'y', 'grupa2')
       
       dane %>% tidyr::nest(data = -grupa2) -> nested
     }
     
-    if(input$os_color_scatter != 'brak' & input$os_facet_scatter != 'brak'){
+    if(input$os_color_scatter != 'none' & input$os_facet_scatter != 'none'){
       colnames(dane) <- c('x', 'y', 'grupa1', 'grupa2')
       
       dane %>% tidyr::nest(data = -c(grupa1, grupa2)) -> nested
@@ -515,25 +515,25 @@ app_server <- function( input, output, session ) {
     
     # nazwy <- c('x', 'y')
     
-    if(input$os_color_scatter == 'brak' & input$os_facet_scatter == 'brak'){
+    if(input$os_color_scatter == 'none' & input$os_facet_scatter == 'none'){
       colnames(dane) <- c('x', 'y')
       
       dane %>% tidyr::nest(data = tidyr::everything()) -> nested
     }
     
-    if(input$os_color_scatter != 'brak' & input$os_facet_scatter == 'brak'){
+    if(input$os_color_scatter != 'none' & input$os_facet_scatter == 'none'){
       colnames(dane) <- c('x', 'y', 'grupa1')
       
       dane %>% tidyr::nest(data = -grupa1) -> nested
     }
     
-    if(input$os_color_scatter == 'brak' & input$os_facet_scatter != 'brak'){
+    if(input$os_color_scatter == 'none' & input$os_facet_scatter != 'none'){
       colnames(dane) <- c('x', 'y', 'grupa2')
       
       dane %>% tidyr::nest(data = -grupa2) -> nested
     }
     
-    if(input$os_color_scatter != 'brak' & input$os_facet_scatter != 'brak'){
+    if(input$os_color_scatter != 'none' & input$os_facet_scatter != 'none'){
       colnames(dane) <- c('x', 'y', 'grupa1', 'grupa2')
       
       dane %>% tidyr::nest(data = -c(grupa1, grupa2)) -> nested
