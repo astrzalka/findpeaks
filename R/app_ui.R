@@ -104,16 +104,16 @@ app_ui <- function(request) {
                             tabsetPanel(type = "tabs", 
                                         tabPanel("Plots", 
                                                  conditionalPanel('input.rodzaj_wykres == "wszystko"',
-                                                                  plotOutput("wykres", height = 800)
+                                                                  plotOutput("wykres", height = 650)
                                                  ),
                                                  conditionalPanel('input.rodzaj_wykres == "schemat"',
-                                                                  plotOutput("strzepka", height = 800)
+                                                                  plotOutput("strzepka", height = 650)
                                                  ),
                                                  conditionalPanel('input.rodzaj_wykres == "kymograf"',
-                                                                  plotOutput("kymograf", height = 800)
+                                                                  plotOutput("kymograf", height = 650)
                                                  ),
                                                  conditionalPanel('input.rodzaj_wykres == "ridges"',
-                                                                  plotOutput("ridges", height = 800)
+                                                                  plotOutput("ridges", height = 650)
                                                  )
                                         ),
                                         #tabPanel("Schemat komórki", plotOutput("strzepka", height = 700)),
