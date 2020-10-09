@@ -36,4 +36,13 @@ For running the app package Peaks in required. It can be installed on linux usin
 devtools::install_version('Peaks', version = '0.2', repos = "http://cran.us.r-project.org")
 ```
 
+Peak detection uses R package Peaks. Please cite:
+
+```{r echo=FALSE}
+
+print(citation("Peaks"), bibtex = F)
+
+```
+
+
 Fluorescence profile data can be prepared using an ImageJ script: imagej_get_profile.ijm , which will save the profiles for all selected ROIs for each channel separately. It will also save ROIs and duplicated tiff file of analyzed hypha in the same directory. 
