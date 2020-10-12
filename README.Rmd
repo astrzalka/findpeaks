@@ -85,6 +85,15 @@ result[[1]] <- result[[1]][-c(4),]
 
 ```
 
+Result of the find_peaks function is a list, where the first data frame is the localization and fluorescence intensity of each found maximum and second data frame contains a smoothed fluorescence profile for each time point.
+
+```{r}
+head(result[[1]])
+
+head(result[[2]])
+```
+
+
 Alternatively complexes localizations can be visualized as a kymograph or a hypha scheme  
 
 ```{r}

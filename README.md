@@ -90,6 +90,31 @@ findpeaks::plot_find_peaks(dane_raw = result[[2]], result[[1]])
 result[[1]] <- result[[1]][-c(4),]
 ```
 
+Result of the find\_peaks function is a list, where the first data frame
+is the localization and fluorescence intensity of each found maximum and
+second data frame contains a smoothed fluorescence profile for each time
+point.
+
+``` r
+head(result[[1]])
+#>   dist_base dist_tip int_raw length index time id
+#> 1     0.065    1.814  13.573  1.879     1    0  1
+#> 2     0.519    1.555   9.695  2.074     2   10  2
+#> 3     0.842    1.296  11.766  2.138     3   20  3
+#> 5     0.648    1.685  10.423  2.333     4   30  5
+#> 6     0.065    2.268   9.251  2.333     4   30  6
+#> 7     1.101    1.361  12.642  2.462     5   40  7
+
+head(result[[2]])
+#>           y time     x       int
+#> 1 0.1186251    0 0.000 0.8911576
+#> 2 0.1867306    0 0.065 0.5781144
+#> 3 0.2698641    0 0.130 0.8374732
+#> 4 0.3667466    0 0.194 1.1553968
+#> 5 0.4770584    0 0.259 0.8758192
+#> 6 0.5971223    0 0.324 0.4941017
+```
+
 Alternatively complexes localizations can be visualized as a kymograph
 or a hypha scheme
 
@@ -98,14 +123,14 @@ or a hypha scheme
 findpeaks::plot_kymograph_find_peaks(dane_raw = data, dane_find = result[[1]], color_point = 'red', color_gradient = 'green3', lapse = 10, odwroc = FALSE)
 ```
 
-<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
 
 ``` r
 
 findpeaks::plot_scheme_find_peaks(dane_find = result[[1]], odwroc = FALSE)
 ```
 
-<img src="man/figures/README-unnamed-chunk-4-2.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-5-2.png" width="100%" />
 
 FLuorescence profiles can also be plotted as ridges plot:
 
@@ -113,4 +138,4 @@ FLuorescence profiles can also be plotted as ridges plot:
 findpeaks::plot_peaks_ridges(data = data)
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
