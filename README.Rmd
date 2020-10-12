@@ -1,5 +1,7 @@
 ---
 output: github_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -19,22 +21,41 @@ knitr::opts_chunk$set(
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 <!-- badges: end -->
 
-The goal of findpeaks is to find maxima in fluorescence profile generated from microscopic time-lapse movie of Streptomyces
+The goal of findpeaks is to find maxima in fluorescence profile generated from microscopic time-lapse movie of Streptomyces.
+
+Online version of the app can be found [here](http://microbesinwroclaw.biotech.uni.wroc.pl:3838/zmm_apps/findpeaks/).
 
 ## Installation
 
-You can install the released version of EDA from Github:
+You can install the released version of findpeaks from Github, but first other R packages have to be installed:
+
+For running the app package Peaks in required. It can be installed on linux using:
+
+``` r
+devtools::install_version('Peaks', version = '0.2', repos = "http://cran.us.r-project.org")
+```
+Windows users need to first install [Rtools 4.0.0](https://cran.r-project.org/bin/windows/Rtools/), which is necessary for package compilation from source, and then install package Peaks as above. 
+
+Package EBImage has to be installed from bioconductor:
+
+``` r
+
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install(version = "3.11")
+BiocManager::install("EBImage")
+
+```
+
+Then you should be able to install and run package findpeaks:
 
 ``` r
 devtools::install_github('astrzalka/findpeaks')
 
 findpeaks::run_app()
 ```
-For running the app package Peaks in required. It can be installed on linux using:
 
-``` r
-devtools::install_version('Peaks', version = '0.2', repos = "http://cran.us.r-project.org")
-```
+
 
 Peak detection uses R package Peaks. Please cite:
 
@@ -46,3 +67,39 @@ print(citation("Peaks"), bibtex = F)
 
 
 Fluorescence profile data can be prepared using an ImageJ script: imagej_get_profile.ijm , which will save the profiles for all selected ROIs for each channel separately. It will also save ROIs and duplicated tiff file of analyzed hypha in the same directory. 
+
+All analysis and plotting functions can be used outside of shiny application as shown in the example below:
+
+
+```{r}
+
+data <- findpeaks::dane_2
+
+result <- findpeaks::find_peaks(data, s = 2.5, m = FALSE, procent = 0.4, threshold = 41)
+
+findpeaks::plot_find_peaks(dane_raw = result[[2]], result[[1]])
+
+#sometimes unwamted complexes can be removed manually
+
+result[[1]] <- result[[1]][-c(4),]
+
+```
+
+Alternatively complexes localizations can be visualized as a kymograph or a hypha scheme  
+
+```{r}
+
+findpeaks::plot_kymograph_find_peaks(dane_raw = data, dane_find = result[[1]], color_point = 'red', color_gradient = 'green3', lapse = 10, odwroc = FALSE)
+
+findpeaks::plot_scheme_find_peaks(dane_find = result[[1]], odwroc = FALSE)
+
+```
+
+
+FLuorescence profiles can also be plotted as ridges plot:
+
+
+```{r}
+findpeaks::plot_peaks_ridges(data = data)
+```
+

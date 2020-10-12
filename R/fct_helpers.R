@@ -16,6 +16,9 @@
 find_peaks <- function (ramka, s = 2, m = FALSE, procent = 1, threshold=10, 
                         back=FALSE, lapse = 10, ...) { 
   
+  library(Peaks)
+  library.dynam('Peaks', 'Peaks', lib.loc=NULL) 
+  
   ramka <- dodaj_ind(ramka)
   
   # sprawdzamy ile jest klatek
@@ -247,6 +250,8 @@ plot_scheme_find_peaks <- function(dane_find, odwroc = TRUE, color_point = 'red'
 #' @examples
 plot_kymograph_find_peaks <- function(dane_raw, dane_find, odwroc = TRUE, pokaz = TRUE,
                                       color_point, color_gradient, lapse){
+  
+  colnames(dane_raw) <- c('V1', 'V2')
   
   dane_raw <- dodaj_ind(dane_raw)
   
