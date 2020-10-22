@@ -49,6 +49,13 @@ app_ui <- function(request) {
                                         min = 0, max = 100, value = 25, step = 1),
                             numericInput("lapse", "Time lapse (min)", 
                                          value = 10),
+                            checkboxInput('local', 'Use local filter?', value = FALSE),
+                            conditionalPanel('input.local == true',
+                                             sliderInput('local_width', 'Choose width of local filter',
+                                                         min = 0.1, max = 10, value = 2),
+                                             numericInput('local_int', 'Choose ratio for local filter',
+                                                          value = 1.5)
+                            ),
                             conditionalPanel('input.rodzaj_wykres == "wszystko"',
                                              uiOutput('filtr_czas'),
                                              textInput('usun', 'Do you wish to remove specific complexes? Specify their id numbers (separated by commas)', 
@@ -313,7 +320,7 @@ app_ui <- function(request) {
                                                   radioButtons('boxviolin', 'Choose plot type?', 
                                                                c('Boxplot' = 'Boxplot', 'Violin' = 'Violin'
                                                                  #, 'Mean with confidence interval' = 'mean_ci'
-                                                                 ), 
+                                                               ), 
                                                                inline = TRUE),
                                                   radioButtons('porownanie', 'Choose comparison type', 
                                                                list('none' = 'brak', 'Only against control' = 'kontrola', 

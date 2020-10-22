@@ -12,6 +12,9 @@ find_peaks(
   threshold = 10,
   back = FALSE,
   lapse = 10,
+  filter_local = FALSE,
+  filter_local_int = 1.1,
+  filter_local_width = 2,
   ...
 )
 }

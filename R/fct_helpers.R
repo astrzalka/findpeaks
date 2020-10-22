@@ -14,7 +14,8 @@
 #'
 #' @examples
 find_peaks <- function (ramka, s = 2, m = FALSE, procent = 1, threshold=10, 
-                        back=FALSE, lapse = 10, ...) { 
+                        back=FALSE, lapse = 10, filter_local = FALSE, 
+                        filter_local_int = 1.1, filter_local_width = 2, ...) { 
   
   library(Peaks)
   library.dynam('Peaks', 'Peaks', lib.loc=NULL) 
@@ -52,7 +53,7 @@ find_peaks <- function (ramka, s = 2, m = FALSE, procent = 1, threshold=10,
     # rysuje wykres z zaznaczonymi pikami, jeżeli plot == TRUE
     if (length(piki[[1]]) > 0){
       # przygotowuje tabelę z wynikami
-      wynik<-miejsca<-data.frame(dist_base=max(x[,1])-x[piki[[1]],1], # odległość od podstawy strzępki
+      wynik<-data.frame(dist_base=max(x[,1])-x[piki[[1]],1], # odległość od podstawy strzępki
                                  dist_tip =x[piki[[1]],1], # odległość od tipa
                                  int_raw = x1[piki[[1]],2],
                                  #int_nor=round((x1[piki[[1]],2]-baza[[1]])/baza[[1]]), # intensywność fluorescencji zaokrąglona do liczby całkowitej
@@ -61,6 +62,29 @@ find_peaks <- function (ramka, s = 2, m = FALSE, procent = 1, threshold=10,
                                  #tlo = baza[[1]],
                                  #tlo_nor = baza2[1],
                                  time = (i * lapse)-lapse) # kolejna klatka
+      if(filter_local){
+        usun <- numeric(0)
+        for(k in 1:nrow(wynik)){
+          peak_maximum <- wynik$int_raw[k]
+          min_width <- wynik$dist_tip[k] - filter_local_width/2
+          max_width <- wynik$dist_tip[k] + filter_local_width/2
+          
+          locality <- subset(x1, V1 >= min_width & V1 < max_width)
+          locality <- mean(locality$V2)
+          
+          if(peak_maximum/locality > filter_local_int){
+            
+          } else {
+            usun <- c(usun, k)
+          }
+          
+        }
+        
+        if(length(usun) > 0){
+        wynik <- wynik[-usun,]
+        }
+      }
+      
     } else { wynik <- NULL}
     # jeżeli obrót pętli inny niż jeden to dopisujemy wyniki do poprzednich
     if (i == 1){ wynik_kon = wynik
@@ -352,4 +376,61 @@ plot_peaks_ridges <- function(data, scale = 'osobno', gradient = TRUE, skala = 2
   return(p)
   
   
+}
+
+
+ponumeruj <- function (wynik, a=0.23, b=0.36, rekord_staly = 10){
+  # zmieniamy indeks na faktor, żeby można dzielić na części
+  wynik$indeks <- as.factor(wynik$indeks)
+  # dodajemy nową kolumnę na numery kompleksów
+  wynik<-data.frame(wynik, kompleks = NA)
+  #pętla dla każdej klatki
+  for (i in 1:nlevels(wynik$indeks)){
+    # wydzielamy kompleksy z jednej klatki
+    x<-subset(wynik, indeks == i)
+    # jeżeli są kompleksy
+    if(nrow(x) != 0){
+      # jeżeli klatka nr 1 to numerujemy kompleksy po kolei i
+      # wprowadzamy zmienną zuzyte - ile było różnych numerów
+      if ( i == 1){ x[,10] <- 1:nrow(x)
+      zuzyte <- length(1:nrow(x))} else { 
+        # jeżeli klatka inna niż 1 
+        # wybieramy dane z poprzedniej klatki
+        poprzedni <- subset(wynik_kon, indeks == (i-1))
+        # jeżeli nie ma poprzedniej (brak kompleksów), wybieramy jeszcze wcześniejszą
+        if(nrow(poprzedni) == 0) {
+          poprzedni <- subset(wynik_kon, indeks == (i-2))
+        }
+        # pętla dla każdego wiersza z danej klatki
+        for( j in 1:nrow(x)){
+          # ustawiamy rekord do porównywania kompleksów
+          rekord <- rekord_staly
+          # sprawdzamy czy któryś kompleks z poprzedniej klatki miał podobną odległość od tip/base do naszego
+          for (k in 1:nrow(poprzedni)){
+            procent <- a*log(x[1,5])+b
+            if (abs(x[j,1] - poprzedni[k,1]) < procent | abs(x[j,2] - poprzedni[k,2]) < procent) {
+              roznica <- abs(x[j,1] - poprzedni[k,1])+abs(x[j,2] - poprzedni[k,2])
+              # czy różnica jest mniejsza od rekordu
+              if (roznica < rekord){
+                # jeżeli tak, dodajemy numer kompleksu i ustawiamy nowy rekord
+                x[j,10] <- poprzedni[k,10]
+                rekord <- roznica
+              }
+            } 
+          }
+          # jeżeli żaden nie pasował podstawiamy nową liczbę
+          if (is.na(x[j,10]) == TRUE) {
+            x[j,10] <- (zuzyte+1)
+            # nadpisujemy zuzyte z uwzględnieniem nowego kompleksu
+            zuzyte<-zuzyte+1
+          }
+        }
+      }
+      # przygotowujemy wynik końcowy
+      if (i == 1) {wynik_kon <- x} else {
+        wynik_kon<-rbind(wynik_kon,x)
+      }
+    }
+  }
+  return(wynik_kon)
 }
