@@ -23,6 +23,9 @@ app_server <- function( input, output, session ) {
     
     if(input$example == TRUE){
       d <- dane_2
+      
+      d <- dodaj_ind(d)
+      
       return(d)
     }
     
@@ -33,6 +36,9 @@ app_server <- function( input, output, session ) {
     inFile <- input$dane
     d <- read.table(inFile$datapath, header=input$header)
     colnames(d) <- c('V1', 'V2')
+    
+    d <- dodaj_ind(d)
+    
     return(d)
     
     

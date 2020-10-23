@@ -20,7 +20,7 @@ find_peaks <- function (ramka, s = 2, m = FALSE, procent = 1, threshold=10,
   library(Peaks)
   library.dynam('Peaks', 'Peaks', lib.loc=NULL) 
   
-  ramka <- dodaj_ind(ramka)
+  #ramka <- dodaj_ind(ramka)
   
   # sprawdzamy ile jest klatek
   ramka[,3]<-as.factor(ramka[,3])
@@ -54,14 +54,14 @@ find_peaks <- function (ramka, s = 2, m = FALSE, procent = 1, threshold=10,
     if (length(piki[[1]]) > 0){
       # przygotowuje tabelę z wynikami
       wynik<-data.frame(dist_base=max(x[,1])-x[piki[[1]],1], # odległość od podstawy strzępki
-                                 dist_tip =x[piki[[1]],1], # odległość od tipa
-                                 int_raw = x1[piki[[1]],2],
-                                 #int_nor=round((x1[piki[[1]],2]-baza[[1]])/baza[[1]]), # intensywność fluorescencji zaokrąglona do liczby całkowitej
-                                 length = max(x[,1]), # długość strzępki
-                                 index = i,
-                                 #tlo = baza[[1]],
-                                 #tlo_nor = baza2[1],
-                                 time = (i * lapse)-lapse) # kolejna klatka
+                        dist_tip =x[piki[[1]],1], # odległość od tipa
+                        int_raw = x1[piki[[1]],2],
+                        #int_nor=round((x1[piki[[1]],2]-baza[[1]])/baza[[1]]), # intensywność fluorescencji zaokrąglona do liczby całkowitej
+                        length = max(x[,1]), # długość strzępki
+                        index = i,
+                        #tlo = baza[[1]],
+                        #tlo_nor = baza2[1],
+                        time = (i * lapse)-lapse) # kolejna klatka
       if(filter_local){
         usun <- numeric(0)
         for(k in 1:nrow(wynik)){
@@ -81,7 +81,7 @@ find_peaks <- function (ramka, s = 2, m = FALSE, procent = 1, threshold=10,
         }
         
         if(length(usun) > 0){
-        wynik <- wynik[-usun,]
+          wynik <- wynik[-usun,]
         }
       }
       
@@ -189,7 +189,7 @@ dodaj_ind<-function(dane){
   # j - będą kolejne numery klatek
   j <- 0
   # dodajemy nową kolumnę
-  dane<-data.frame(dane, ind=0)
+  dane <- data.frame(dane, ind=0)
   for (i in 1:n){
     # zwiększamy j jak pojawi się zero w pierwszej kolumnie
     if (dane[i,1] == 0) {j <- j+1}
@@ -379,27 +379,104 @@ plot_peaks_ridges <- function(data, scale = 'osobno', gradient = TRUE, skala = 2
 }
 
 
-ponumeruj <- function (wynik, a=0.23, b=0.36, rekord_staly = 10){
+ponumeruj <- function (wynik, a=0.23, b=0.36, rekord_staly = 10, zakres = 1.5, gap = 0){
   # zmieniamy indeks na faktor, żeby można dzielić na części
-  wynik$indeks <- as.factor(wynik$indeks)
+  wynik$index <- as.factor(wynik$index)
   # dodajemy nową kolumnę na numery kompleksów
   wynik<-data.frame(wynik, kompleks = NA)
   #pętla dla każdej klatki
-  for (i in 1:nlevels(wynik$indeks)){
+  for (i in 1:nlevels(wynik$index)){
     # wydzielamy kompleksy z jednej klatki
-    x<-subset(wynik, indeks == i)
+    x<-subset(wynik, index == i)
     # jeżeli są kompleksy
     if(nrow(x) != 0){
       # jeżeli klatka nr 1 to numerujemy kompleksy po kolei i
       # wprowadzamy zmienną zuzyte - ile było różnych numerów
-      if ( i == 1){ x[,10] <- 1:nrow(x)
-      zuzyte <- length(1:nrow(x))} else { 
+      if (i == 1){ 
+        x[,8] <- 1:nrow(x)
+        zuzyte <- length(1:nrow(x))
+      } else { 
+        for( j in 1:nrow(x)){
+          
+          # jeżeli klatka inna niż 1 
+          # wybieramy dane z poprzedniej klatki
+          poprzedni <- subset(wynik_kon, index == (i-1) & 
+                                dist_tip >= x$dist_tip[j] - zakres &
+                                dist_tip <= x$dist_tip[j] + zakres)
+          # jeżeli nie ma poprzedniej (brak kompleksów), wybieramy jeszcze wcześniejszą
+          if(nrow(poprzedni) == 0 & gap == 1) {
+            poprzedni <- subset(wynik_kon, index == (i-2)& 
+                                  dist_tip >= x$dist_tip[j] - zakres &
+                                  dist_tip <= x$dist_tip[j] + zakres)
+          }
+          # pętla dla każdego wiersza z danej klatki
+          if(nrow(poprzedni) == 1){
+            x[j,8] <- poprzedni[1,8]
+          }
+          
+          if(nrow(poprzedni) > 1){
+            poprzedni$roznica <- abs(poprzedni$dist_tip - x$dist_tip[j])
+            poprzedni <- dplyr::arrange(poprzedni, roznica)
+            x[j,8] <- poprzedni[1,8]
+          }
+          # # ustawiamy rekord do porównywania kompleksów
+          # rekord <- rekord_staly
+          # # sprawdzamy czy któryś kompleks z poprzedniej klatki miał podobną odległość od tip/base do naszego
+          # for (k in 1:nrow(poprzedni)){
+          #   procent <- a*log(x[1,4])+b
+          #   if (abs(x[j,1] - poprzedni[k,1]) < procent | abs(x[j,2] - poprzedni[k,2]) < procent) {
+          #     roznica <- abs(x[j,1] - poprzedni[k,1])+abs(x[j,2] - poprzedni[k,2])
+          #     # czy różnica jest mniejsza od rekordu
+          #     if (roznica < rekord){
+          #       # jeżeli tak, dodajemy numer kompleksu i ustawiamy nowy rekord
+          #       x[j,8] <- poprzedni[k,8]
+          #       rekord <- roznica
+          #     }
+          #   } 
+          # }
+          # jeżeli żaden nie pasował podstawiamy nową liczbę
+          if (is.na(x[j,8]) == TRUE) {
+            x[j,8] <- (zuzyte+1)
+            # nadpisujemy zuzyte z uwzględnieniem nowego kompleksu
+            zuzyte<-zuzyte+1
+          }
+        }
+      }
+      # przygotowujemy wynik końcowy
+      if (i == 1) {
+        wynik_kon <- x
+      } else {
+        wynik_kon<-rbind(wynik_kon,x)
+      }
+    }
+  }
+  return(wynik_kon)
+}
+
+
+ponumeruj_stara <- function (wynik, a=0.23, b=0.36, rekord_staly = 10){
+  # zmieniamy indeks na faktor, żeby można dzielić na części
+  wynik$index <- as.factor(wynik$index)
+  # dodajemy nową kolumnę na numery kompleksów
+  wynik<-data.frame(wynik, kompleks = NA)
+  #pętla dla każdej klatki
+  for (i in 1:nlevels(wynik$index)){
+    # wydzielamy kompleksy z jednej klatki
+    x<-subset(wynik, index == i)
+    # jeżeli są kompleksy
+    if(nrow(x) != 0){
+      # jeżeli klatka nr 1 to numerujemy kompleksy po kolei i
+      # wprowadzamy zmienną zuzyte - ile było różnych numerów
+      if ( i == 1){ 
+        x[,8] <- 1:nrow(x)
+        zuzyte <- length(1:nrow(x))
+      } else { 
         # jeżeli klatka inna niż 1 
         # wybieramy dane z poprzedniej klatki
-        poprzedni <- subset(wynik_kon, indeks == (i-1))
+        poprzedni <- subset(wynik_kon, index == (i-1))
         # jeżeli nie ma poprzedniej (brak kompleksów), wybieramy jeszcze wcześniejszą
         if(nrow(poprzedni) == 0) {
-          poprzedni <- subset(wynik_kon, indeks == (i-2))
+          poprzedni <- subset(wynik_kon, index == (i-2))
         }
         # pętla dla każdego wiersza z danej klatki
         for( j in 1:nrow(x)){
@@ -407,27 +484,29 @@ ponumeruj <- function (wynik, a=0.23, b=0.36, rekord_staly = 10){
           rekord <- rekord_staly
           # sprawdzamy czy któryś kompleks z poprzedniej klatki miał podobną odległość od tip/base do naszego
           for (k in 1:nrow(poprzedni)){
-            procent <- a*log(x[1,5])+b
+            procent <- a*log(x[1,4])+b
             if (abs(x[j,1] - poprzedni[k,1]) < procent | abs(x[j,2] - poprzedni[k,2]) < procent) {
               roznica <- abs(x[j,1] - poprzedni[k,1])+abs(x[j,2] - poprzedni[k,2])
               # czy różnica jest mniejsza od rekordu
               if (roznica < rekord){
                 # jeżeli tak, dodajemy numer kompleksu i ustawiamy nowy rekord
-                x[j,10] <- poprzedni[k,10]
+                x[j,8] <- poprzedni[k,8]
                 rekord <- roznica
               }
             } 
           }
           # jeżeli żaden nie pasował podstawiamy nową liczbę
-          if (is.na(x[j,10]) == TRUE) {
-            x[j,10] <- (zuzyte+1)
+          if (is.na(x[j,8]) == TRUE) {
+            x[j,8] <- (zuzyte+1)
             # nadpisujemy zuzyte z uwzględnieniem nowego kompleksu
             zuzyte<-zuzyte+1
           }
         }
       }
       # przygotowujemy wynik końcowy
-      if (i == 1) {wynik_kon <- x} else {
+      if (i == 1) {
+        wynik_kon <- x
+      } else {
         wynik_kon<-rbind(wynik_kon,x)
       }
     }
