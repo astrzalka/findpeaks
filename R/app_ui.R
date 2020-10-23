@@ -141,6 +141,25 @@ app_ui <- function(request) {
                         
                         
                ),
+               tabPanel("Tracking",
+                        sidebarLayout(
+                          sidebarPanel(
+                            fileInput("dane_tracks", 'Choose txt file',
+                                      accept=c('.txt')),
+                            numericInput('diff_width', 
+                                         'Choose maximum position difference (calculated from the tip of the hypha)',
+                                         value = 0.6, min = 0, max = 10, step = 0.1),
+                            checkboxInput('gap', "Allow for gaps (one frame)?"),
+                            numericInput('filter_length', "Choose minimum track length", value = 3, min = 0, step = 1),
+                            textInput('tracks_id', 'Show only specific tracks', placeholder = '1, 4'),
+                            downloadButton('download_data_tracks', 'Donwload tracks txt data file')
+                          ),
+                          mainPanel(
+                            plotOutput("plot_tracks", height = 600, width = 900),
+                            tableOutput('tracks_table')
+                          )
+                        )
+               ),
                tabPanel("Strains comparison",
                         #sidebarLayout(sidebarPanel(
                         fluidRow(

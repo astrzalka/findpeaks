@@ -275,9 +275,9 @@ plot_scheme_find_peaks <- function(dane_find, odwroc = TRUE, color_point = 'red'
 plot_kymograph_find_peaks <- function(dane_raw, dane_find, odwroc = TRUE, pokaz = TRUE,
                                       color_point, color_gradient, lapse){
   
-  colnames(dane_raw) <- c('V1', 'V2')
+  #colnames(dane_raw) <- c('V1', 'V2')
   
-  dane_raw <- dodaj_ind(dane_raw)
+  #dane_raw <- dodaj_ind(dane_raw)
   
   dane_raw <- dane_raw %>% dplyr::group_by(ind) %>% dplyr::mutate(V3 = rev(V1))
   
@@ -393,31 +393,40 @@ ponumeruj <- function (wynik, a=0.23, b=0.36, rekord_staly = 10, zakres = 1.5, g
       # jeżeli klatka nr 1 to numerujemy kompleksy po kolei i
       # wprowadzamy zmienną zuzyte - ile było różnych numerów
       if (i == 1){ 
-        x[,8] <- 1:nrow(x)
+        x$kompleks <- 1:nrow(x)
         zuzyte <- length(1:nrow(x))
       } else { 
         for( j in 1:nrow(x)){
           
           # jeżeli klatka inna niż 1 
           # wybieramy dane z poprzedniej klatki
-          poprzedni <- subset(wynik_kon, index == (i-1) & 
-                                dist_tip >= x$dist_tip[j] - zakres &
-                                dist_tip <= x$dist_tip[j] + zakres)
+          poprzedni <- subset(wynik_kon, index == (i-1)&(( 
+            dist_tip >= x$dist_tip[j] - zakres &
+              dist_tip <= x$dist_tip[j] + zakres)|
+              ( 
+                dist_base >= x$dist_base[j] - zakres &
+                  dist_base <= x$dist_base[j] + zakres)
+          ))
           # jeżeli nie ma poprzedniej (brak kompleksów), wybieramy jeszcze wcześniejszą
           if(nrow(poprzedni) == 0 & gap == 1) {
-            poprzedni <- subset(wynik_kon, index == (i-2)& 
+            poprzedni <- subset(wynik_kon, index == (i-2)&(( 
                                   dist_tip >= x$dist_tip[j] - zakres &
-                                  dist_tip <= x$dist_tip[j] + zakres)
+                                  dist_tip <= x$dist_tip[j] + zakres)|
+                                  ( 
+                                    dist_base >= x$dist_base[j] - zakres &
+                                      dist_base <= x$dist_base[j] + zakres)
+                                  )
+                                )
           }
           # pętla dla każdego wiersza z danej klatki
           if(nrow(poprzedni) == 1){
-            x[j,8] <- poprzedni[1,8]
+            x$kompleks[j] <- poprzedni$kompleks[1]
           }
           
           if(nrow(poprzedni) > 1){
             poprzedni$roznica <- abs(poprzedni$dist_tip - x$dist_tip[j])
             poprzedni <- dplyr::arrange(poprzedni, roznica)
-            x[j,8] <- poprzedni[1,8]
+            x$kompleks[j] <- poprzedni$kompleks[1]
           }
           # # ustawiamy rekord do porównywania kompleksów
           # rekord <- rekord_staly
@@ -435,8 +444,8 @@ ponumeruj <- function (wynik, a=0.23, b=0.36, rekord_staly = 10, zakres = 1.5, g
           #   } 
           # }
           # jeżeli żaden nie pasował podstawiamy nową liczbę
-          if (is.na(x[j,8]) == TRUE) {
-            x[j,8] <- (zuzyte+1)
+          if (is.na(x$kompleks[j]) == TRUE) {
+            x$kompleks[j] <- (zuzyte+1)
             # nadpisujemy zuzyte z uwzględnieniem nowego kompleksu
             zuzyte<-zuzyte+1
           }
@@ -514,7 +523,13 @@ ponumeruj_stara <- function (wynik, a=0.23, b=0.36, rekord_staly = 10){
   return(wynik_kon)
 }
 
-plot_tracking_hyphae <- function(wynik, filter_tracks = NA){
+plot_tracking_hyphae <- function(wynik, filter_tracks = NA, filter_length = 3){
+  
+  wynik %>% dplyr::group_by(kompleks, time) %>%
+    dplyr::summarise(index = unique(index)) %>%
+    dplyr::mutate(track_length = dplyr::n()) %>%
+    dplyr::right_join(wynik) %>%
+    dplyr::filter(track_length >= filter_length) -> wynik
   
   if(!is.na(filter_tracks)){
     
@@ -526,14 +541,16 @@ plot_tracking_hyphae <- function(wynik, filter_tracks = NA){
   
   p<-p+ggplot2::geom_bar(ggplot2::aes(x=time, y=length), stat="identity", fill="snow1", color="black", 
                 position="dodge", width=5)+
-    ggplot2::geom_text(aes(color = factor(kompleks)))+
+    ggplot2::geom_text(ggplot2::aes(color = factor(kompleks)))+
     ggplot2::theme_bw()+
     ggplot2::ylab(expression(paste("Length [", mu, "m]")))+
-    ggplot2::xlab("Time [min]")
+    ggplot2::xlab("Time [min]")+
+    ggplot2::scale_color_discrete(name = 'Track id')+
+    ggplot2::theme(legend.position = 'bottom')
   
-  print(p)
+  #print(p)
   
-  return(p)
+  return(list(p, wynik))
   
 }
 
@@ -542,8 +559,8 @@ summarize_tracks <- function(wynik, filter_length = 3){
   
   wynik %>% dplyr::group_by(kompleks, time) %>%
     dplyr::summarise(dist_tip = mean(dist_tip)) %>%
-    dplyr::mutate(track_length = n()) %>%
-    dplyr::filter(track_length > filter_length) %>%
+    dplyr::mutate(track_length = dplyr::n()) %>%
+    dplyr::filter(track_length >= filter_length) %>%
     dplyr::mutate(diff = abs(dist_tip - dplyr::lag(dist_tip))) %>%
     dplyr::summarize(track_length = unique(track_length),
               mean_diff = mean(diff, na.rm = TRUE)) ->

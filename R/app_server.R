@@ -104,7 +104,7 @@ app_server <- function( input, output, session ) {
     
     x[[1]] <- subset(x[[1]], !(id %in% usun_kompleksy))
     x[[1]]$parameters <- paste(input$sigma, input$procent, input$threshold, input$markov,
-                              input$usun, sep = '_')
+                               input$usun, sep = '_')
     
     x[[1]] %>% dplyr::arrange(time, dist_tip) %>%
       dplyr::group_by(time) %>%
@@ -228,8 +228,8 @@ app_server <- function( input, output, session ) {
     tiff <- image_tiff()
     
     if(input$display_all == FALSE){
-    
-    pixmap::plot(tiff[,,input$channel,input$frame]*(1/mean(tiff[,,input$channel,])))
+      
+      pixmap::plot(tiff[,,input$channel,input$frame]*(1/mean(tiff[,,input$channel,])))
     } else {
       
       norm <- (1/mean(tiff[,,input$channel,])/2)
@@ -238,6 +238,31 @@ app_server <- function( input, output, session ) {
       
     }
   })
+  
+  #### Code for tracking analysis
+  
+  data_numbered <- reactive({
+    
+    data <- wynik()
+    
+    result <- ponumeruj(wynik = data[[1]], zakres = input$diff_width, gap = input$gap)
+    #result <- ponumeruj(wynik = data[[1]], zakres = 0.6, gap = 0)
+    
+    return(result)
+  })
+  
+  plot_tracks <- reactive({
+    
+    data <- data_numbered()
+    
+    res <- plot_tracking_hyphae(data, filter_tracks = NA, filter_length = input$filter_length)
+    
+    return(res)
+    
+  })
+  
+  output$plot_tracks <- renderPlot({plot_tracks()[[1]]})
+  output$tracks_table <- renderTable({data_numbered()})
   
   #### Code for analysis of multiple hyphae/strains
   
