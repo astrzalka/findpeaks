@@ -513,3 +513,42 @@ ponumeruj_stara <- function (wynik, a=0.23, b=0.36, rekord_staly = 10){
   }
   return(wynik_kon)
 }
+
+plot_tracking_hyphae <- function(wynik, filter_tracks = NA){
+  
+  if(!is.na(filter_tracks)){
+    
+    wynik %>% dplyr::filter(kompleks %in% filter_tracks) -> wynik
+    
+  }
+  
+  p<-ggplot2::ggplot(data=wynik, ggplot2::aes(y=dist_base, x=time, label = kompleks))
+  
+  p<-p+ggplot2::geom_bar(ggplot2::aes(x=time, y=length), stat="identity", fill="snow1", color="black", 
+                position="dodge", width=5)+
+    ggplot2::geom_text(aes(color = factor(kompleks)))+
+    ggplot2::theme_bw()+
+    ggplot2::ylab(expression(paste("Length [", mu, "m]")))+
+    ggplot2::xlab("Time [min]")
+  
+  print(p)
+  
+  return(p)
+  
+}
+
+
+summarize_tracks <- function(wynik, filter_length = 3){
+  
+  wynik %>% dplyr::group_by(kompleks, time) %>%
+    dplyr::summarise(dist_tip = mean(dist_tip)) %>%
+    dplyr::mutate(track_length = n()) %>%
+    dplyr::filter(track_length > filter_length) %>%
+    dplyr::mutate(diff = abs(dist_tip - dplyr::lag(dist_tip))) %>%
+    dplyr::summarize(track_length = unique(track_length),
+              mean_diff = mean(diff, na.rm = TRUE)) ->
+    wynik_tracks
+  
+  return(wynik_tracks)
+  
+}
