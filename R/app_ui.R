@@ -156,6 +156,7 @@ app_ui <- function(request) {
                           ),
                           mainPanel(
                             plotOutput("plot_tracks", height = 600, width = 900),
+                            tableOutput('tracks_summary'),
                             tableOutput('tracks_table')
                           )
                         )

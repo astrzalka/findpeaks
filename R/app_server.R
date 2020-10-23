@@ -16,6 +16,12 @@ app_server <- function( input, output, session ) {
   library.dynam('Peaks', 'Peaks', lib.loc=NULL) 
   library(magrittr)
   
+  ######################################################################################
+  
+  ### Code for data upload 
+  
+  ######################################################################################
+  
   dane <- reactive({
     # validate(
     #   need(input$dane != '', 'Proszę wybierz dane')
@@ -72,8 +78,14 @@ app_server <- function( input, output, session ) {
   #   })
   #   
   
+  
   output$dane_raw <- renderTable(dane())
   
+  #######################################################################################
+  
+  ### Code for peaks identification
+  
+  ########################################################################################
   
   wynik <- reactive({
     
@@ -239,13 +251,32 @@ app_server <- function( input, output, session ) {
     }
   })
   
+  #########################################################################################
+  
   #### Code for tracking analysis
+  
+  #########################################################################################
+  
+  data_for_tracks <- reactive({
+    
+    inFile <- input$dane_tracks
+    if (is.null(inFile)){
+      
+      
+      return(wynik()[[1]])
+    } else {
+      inFile <- input$dane_tracks
+      d <- read.table(inFile$datapath)
+      
+      return(d)
+    }
+  })
   
   data_numbered <- reactive({
     
-    data <- wynik()
+    data <- data_for_tracks()
     
-    result <- ponumeruj(wynik = data[[1]], zakres = input$diff_width, gap = input$gap)
+    result <- ponumeruj(wynik = data, zakres = input$diff_width, gap = input$gap)
     #result <- ponumeruj(wynik = data[[1]], zakres = 0.6, gap = 0)
     
     return(result)
@@ -255,17 +286,53 @@ app_server <- function( input, output, session ) {
     
     data <- data_numbered()
     
-    res <- plot_tracking_hyphae(data, filter_tracks = NA, filter_length = input$filter_length)
+    filter_tracks <- NA
+    if(input$tracks_id != ''){
+      filter_tracks <- sub(' ', '', unlist(stringr::str_split(input$tracks_id, ',')))
+    }
+    res <- plot_tracking_hyphae(data, filter_tracks = filter_tracks, filter_length = input$filter_length)
     
     return(res)
     
   })
   
+  summary_tracks <- reactive({
+    
+    data <- data_numbered()
+    
+    result <- summarize_tracks(wynik = data, filter_length = input$filter_length)
+    
+    return(result)
+    
+  })
+  
   output$plot_tracks <- renderPlot({plot_tracks()[[1]]})
+  output$tracks_summary <- renderTable({summary_tracks()})
   output$tracks_table <- renderTable({data_numbered()})
+  
+  
+  dane_download_tracks <- reactive({
+    wb <- plot_tracks()[[2]]
+    return(wb)
+  })
+  
+  # download data from second tab - bound together from many files
+  output$download_data_tracks <- downloadHandler(
+    
+    filename = function() {
+      paste('results_tracks', '.txt', sep = '')
+    },
+    content = function(file) {
+      write.table(dane_download_tracks(), file)
+    }
+    
+  )
+  
+  #########################################################################################
   
   #### Code for analysis of multiple hyphae/strains
   
+  #########################################################################################
   
   # load multiple files into shiny using data.table and lapply
   dane_porownanie <-reactive({
