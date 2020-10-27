@@ -276,7 +276,10 @@ app_server <- function( input, output, session ) {
     
     data <- data_for_tracks()
     
-    result <- ponumeruj(wynik = data, zakres = input$diff_width, gap = input$gap)
+    result <- ponumeruj(wynik = data, 
+                        zakres = input$diff_width, 
+                        gap = input$gap, 
+                        split = input$split)
     #result <- ponumeruj(wynik = data[[1]], zakres = 0.6, gap = 0)
     
     return(result)
@@ -320,7 +323,7 @@ app_server <- function( input, output, session ) {
   output$download_data_tracks <- downloadHandler(
     
     filename = function() {
-      paste('results_tracks', '.txt', sep = '')
+      paste('wynik', input$id, '_', input$szczep, '_tracks.txt', sep = '')
     },
     content = function(file) {
       write.table(dane_download_tracks(), file)

@@ -188,6 +188,10 @@ dodaj_ind<-function(dane){
   n <- nrow(dane)
   # j - będą kolejne numery klatek
   j <- 0
+  if(dane[1,1] != 0){
+    j <- 1
+  }
+  
   # dodajemy nową kolumnę
   dane <- data.frame(dane, ind=0)
   for (i in 1:n){
@@ -379,7 +383,7 @@ plot_peaks_ridges <- function(data, scale = 'osobno', gradient = TRUE, skala = 2
 }
 
 
-ponumeruj <- function (wynik, a=0.23, b=0.36, rekord_staly = 10, zakres = 1.5, gap = 0){
+ponumeruj <- function (wynik, a=0.23, b=0.36, rekord_staly = 10, zakres = 1.5, gap = 0, split = TRUE){
   # zmieniamy indeks na faktor, żeby można dzielić na części
   wynik$index <- as.factor(wynik$index)
   # dodajemy nową kolumnę na numery kompleksów
@@ -410,13 +414,13 @@ ponumeruj <- function (wynik, a=0.23, b=0.36, rekord_staly = 10, zakres = 1.5, g
           # jeżeli nie ma poprzedniej (brak kompleksów), wybieramy jeszcze wcześniejszą
           if(nrow(poprzedni) == 0 & gap == 1) {
             poprzedni <- subset(wynik_kon, index == (i-2)&(( 
-                                  dist_tip >= x$dist_tip[j] - zakres &
-                                  dist_tip <= x$dist_tip[j] + zakres)|
-                                  ( 
-                                    dist_base >= x$dist_base[j] - zakres &
-                                      dist_base <= x$dist_base[j] + zakres)
-                                  )
-                                )
+              dist_tip >= x$dist_tip[j] - zakres &
+                dist_tip <= x$dist_tip[j] + zakres)|
+                ( 
+                  dist_base >= x$dist_base[j] - zakres &
+                    dist_base <= x$dist_base[j] + zakres)
+            )
+            )
           }
           # pętla dla każdego wiersza z danej klatki
           if(nrow(poprzedni) == 1){
@@ -449,8 +453,68 @@ ponumeruj <- function (wynik, a=0.23, b=0.36, rekord_staly = 10, zakres = 1.5, g
             # nadpisujemy zuzyte z uwzględnieniem nowego kompleksu
             zuzyte<-zuzyte+1
           }
+          
+          
+          
         }
       }
+      
+      if(split == FALSE){
+        
+        # jeżeli liczba unikalnych numerów kompleksów jest mniejsza od ilości kompleksów
+        if (nrow(x) != length(unique(x$kompleks))){
+          # ilość powtarających się kompleksów
+          x2 <- as.factor(x$kompleks[duplicated(x$kompleks)])
+          
+          # jakie numery się powtarzają
+          poziomy <- as.numeric(levels(x2))
+          # analizujemy każdy powtarzający się numer osobno
+          for(l in 1:nlevels(x2)){
+            
+            # wartości wcześniejszej klatki tylko dla powtarzającego się kompleksu
+            
+            poprzedni2 <- subset(wynik_kon, index == i-1 & kompleks == poziomy[l])
+            
+            if(nrow(poprzedni2) == 0 & gap == 1){
+              poprzedni2 <- subset(wynik_kon, index == i-2 & kompleks == poziomy[l])  
+            }
+            
+            # wartości analizowanej klatki tylko dla powtarzającego się kompleksu
+            x3 <- subset(x,  kompleks == poziomy[l])
+            # sprawdzamy każdy rząd
+            for(m in 1:nrow(x3)){
+              # jeżeli pierwszy rząd to liczymy sumę różnic odległosci między klatkami
+              if(m == 1){
+                rekord <- abs(x3$dist_base[m] - poprzedni2$dist_base[1])+
+                  abs(x3$dist_tip[m] - poprzedni2$dist_tip[1])
+                # którego rzędu dotyczy rekord
+                ktory <- 1
+              } else {
+                # jeżeli rząd inny niż 1 to liczymy nową sumę różnic
+                nowy <- abs(x3$dist_base[m] - poprzedni2$dist_base[1])+
+                  abs(x3$dist_tip[m] - poprzedni2$dist_tip[1])
+                # porównujemy rekord i nową
+                if (rekord <= nowy){
+                  # jeżeli rekord mniejszy to zmieniamy numer kompleksu w nowym rzędzie
+                  x3$kompleks[m] <- (zuzyte + 1)
+                  zuzyte <- zuzyte+1
+                } else {
+                  # jeżeli rekord większy to zmieniamy numer kompleksu w rzędzie rekordu
+                  x3$kompleks[ktory]<- (zuzyte + 1)
+                  zuzyte <- zuzyte+1
+                  # ustawiamy nowy rekord i nowy ktory
+                  rekord <- nowy
+                  ktory <- m
+                }
+              }
+            }
+            # podstawiamy zmienione wiersze pod x
+            x[x$kompleks==poziomy[l],] <- x3
+          }
+        }
+        
+      }
+      
       # przygotowujemy wynik końcowy
       if (i == 1) {
         wynik_kon <- x
@@ -506,9 +570,9 @@ ponumeruj_stara <- function (wynik, a=0.23, b=0.36, rekord_staly = 10){
           }
           # jeżeli żaden nie pasował podstawiamy nową liczbę
           if (is.na(x[j,8]) == TRUE) {
-            x[j,8] <- (zuzyte+1)
+            x[j,8] <- zuzyte+1
             # nadpisujemy zuzyte z uwzględnieniem nowego kompleksu
-            zuzyte<-zuzyte+1
+            zuzyte <- zuzyte+1
           }
         }
       }
@@ -540,7 +604,7 @@ plot_tracking_hyphae <- function(wynik, filter_tracks = NA, filter_length = 3){
   p<-ggplot2::ggplot(data=wynik, ggplot2::aes(y=dist_base, x=time, label = kompleks))
   
   p<-p+ggplot2::geom_bar(ggplot2::aes(x=time, y=length), stat="identity", fill="snow1", color="black", 
-                position="dodge", width=5)+
+                         position="dodge", width=5)+
     ggplot2::geom_text(ggplot2::aes(color = factor(kompleks)))+
     ggplot2::theme_bw()+
     ggplot2::ylab(expression(paste("Length [", mu, "m]")))+
@@ -563,7 +627,7 @@ summarize_tracks <- function(wynik, filter_length = 3){
     dplyr::filter(track_length >= filter_length) %>%
     dplyr::mutate(diff = abs(dist_tip - dplyr::lag(dist_tip))) %>%
     dplyr::summarize(track_length = unique(track_length),
-              mean_diff = mean(diff, na.rm = TRUE)) ->
+                     mean_diff = mean(diff, na.rm = TRUE)) ->
     wynik_tracks
   
   return(wynik_tracks)

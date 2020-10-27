@@ -150,6 +150,7 @@ app_ui <- function(request) {
                                          'Choose maximum position difference (calculated from the tip of the hypha)',
                                          value = 0.6, min = 0, max = 10, step = 0.1),
                             checkboxInput('gap', "Allow for gaps (one frame)?"),
+                            checkboxInput('split', 'Allow for tracks splitting?'),
                             numericInput('filter_length', "Choose minimum track length", value = 3, min = 0, step = 1),
                             textInput('tracks_id', 'Show only specific tracks', placeholder = '1, 4'),
                             downloadButton('download_data_tracks', 'Donwload tracks txt data file')
