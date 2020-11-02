@@ -9,7 +9,7 @@
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 <!-- badges: end -->
 
-The goal of findpeaks is to find maxima in fluorescence profile
+The goal of findpeaks is finding maxima in fluorescence profile
 generated from microscopic time-lapse movie of Streptomyces.
 
 Online version of the app can be found
@@ -18,21 +18,21 @@ Online version of the app can be found
 ## Installation
 
 You can install the released version of findpeaks from Github, but first
-other R packages have to be installed:
+other R packages should be installed:
 
-For running the app package Peaks in required. It can be installed on
+For running the app package Peaks is required. It can be installed on
 linux using:
 
 ``` r
 devtools::install_version('Peaks', version = '0.2', repos = "http://cran.us.r-project.org")
 ```
 
-Windows users need to first install
+Windows users first have to install
 [Rtools 4.0.0](https://cran.r-project.org/bin/windows/Rtools/), which is
 necessary for package compilation from source, and then install package
 Peaks as above.
 
-Package EBImage has to be installed from bioconductor:
+Package EBImage can be installed from bioconductor:
 
 ``` r
 
@@ -62,12 +62,12 @@ Peak detection uses R package Peaks. Please cite:
     #> package DESCRIPTION file and may need manual editing, see
     #> 'help("citation")'.
 
-Fluorescence profile data can be prepared using an ImageJ script:
+Fluorescence profiles data can be prepared using an ImageJ script:
 imagej\_get\_profile.ijm , which will save the profiles for all selected
 ROIs for each channel separately. It will also save ROIs and duplicated
 tiff file of analyzed hypha in the same directory.
 
-All analysis and plotting functions can be used outside of shiny
+All analysis and plotting functions can be also used outside of shiny
 application as shown in the example below:
 
 ``` r
