@@ -14,7 +14,7 @@
 #'
 #' @examples
 find_peaks <- function (ramka, s = 2, m = FALSE, procent = 1, threshold=10, 
-                        back=FALSE, lapse = 10, filter_local = FALSE, 
+                        back='No', lapse = 10, filter_local = FALSE, 
                         filter_local_int = 1.1, filter_local_width = 2, ...) { 
   
   library(Peaks)
@@ -37,17 +37,24 @@ find_peaks <- function (ramka, s = 2, m = FALSE, procent = 1, threshold=10,
     # jaki procent tła ma odjąć
     baza2 <- baza[[1]] * procent
     
-    if(back == FALSE & procent != 0){
+    if(back == 'No' & procent != 0){
       # odejmujemy wartość baseline od intensywności i dzielimy przez baseline
       x[,2]<-(x[,2]-baza2[1])/baza2[1]
       #zamieniamy wartości ujemne na zera
       x[,2]<-replace(x[,2], x[,2]<0, 0)
     }
-    # szukanie pików
-    piki<-Peaks::SpectrumSearch(x[,2], sigma=s, markov=m, threshold=threshold, background=back)
     
-    if(back == TRUE){
+    if(back == 'minimum'){
       x[,2] <- x[,2] - min(x[,2])
+    }
+    
+    # szukanie pików
+    if(back == 'Peaks'){
+      piki<-Peaks::SpectrumSearch(x[,2], sigma=s, markov=m, threshold=threshold, background=TRUE)
+      x[,2] <- x[,2] - min(x[,2])
+    } else {
+      piki<-Peaks::SpectrumSearch(x[,2], sigma=s, markov=m, threshold=threshold, background=FALSE)
+      
     }
     
     # rysuje wykres z zaznaczonymi pikami, jeżeli plot == TRUE

@@ -90,7 +90,7 @@ app_server <- function( input, output, session ) {
   wynik <- reactive({
     
     x <- find_peaks(dane(), s = input$sigma, procent = input$procent, m = as.logical(input$markov), 
-                    threshold = input$threshold, lapse = input$lapse, back = input$background,
+                    threshold = input$threshold, lapse = input$lapse, back = input$background_type,
                     filter_local = input$local, filter_local_int = input$local_int, 
                     filter_local_width = input$local_width)
     #     print('nie')

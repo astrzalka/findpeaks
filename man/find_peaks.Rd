@@ -10,7 +10,7 @@ find_peaks(
   m = FALSE,
   procent = 1,
   threshold = 10,
-  back = FALSE,
+  back = "No",
   lapse = 10,
   filter_local = FALSE,
   filter_local_int = 1.1,
