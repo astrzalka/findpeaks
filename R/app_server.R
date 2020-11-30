@@ -16,11 +16,9 @@ app_server <- function( input, output, session ) {
   library.dynam('Peaks', 'Peaks', lib.loc=NULL) 
   library(magrittr)
   
-  ######################################################################################
+
+  ################################ data upload ###################################################### 
   
-  ### Code for data upload 
-  
-  ######################################################################################
   
   dane <- reactive({
     # validate(
@@ -81,11 +79,9 @@ app_server <- function( input, output, session ) {
   
   output$dane_raw <- renderTable(dane())
   
-  #######################################################################################
+
+  ############################### peaks identification ########################################
   
-  ### Code for peaks identification
-  
-  ########################################################################################
   
   wynik <- reactive({
     
@@ -115,7 +111,8 @@ app_server <- function( input, output, session ) {
     usun_kompleksy <- sub(' ', '', unlist(stringr::str_split(input$usun, ',')))
     
     x[[1]] <- subset(x[[1]], !(id %in% usun_kompleksy))
-    x[[1]]$parameters <- paste(input$sigma, input$procent, input$threshold, input$markov,
+    x[[1]]$parameters <- paste(input$sigma, input$procent, input$threshold, input$markov, 
+                               input$background_type, input$local, input$local_widht, input$local_int,
                                input$usun, sep = '_')
     
     x[[1]] %>% dplyr::arrange(time, dist_tip) %>%
@@ -251,11 +248,8 @@ app_server <- function( input, output, session ) {
     }
   })
   
-  #########################################################################################
-  
-  #### Code for tracking analysis
-  
-  #########################################################################################
+
+  ##################################### tracking analysis ##############################################
   
   data_for_tracks <- reactive({
     
@@ -331,11 +325,10 @@ app_server <- function( input, output, session ) {
     
   )
   
-  #########################################################################################
+
   
-  #### Code for analysis of multiple hyphae/strains
+  ################################# analysis of multiple hyphae/strains ################################
   
-  #########################################################################################
   
   # load multiple files into shiny using data.table and lapply
   dane_porownanie <-reactive({

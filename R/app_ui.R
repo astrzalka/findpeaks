@@ -13,6 +13,9 @@ app_ui <- function(request) {
     navbarPage("Find Peaks",
                theme = shinythemes::shinytheme("united"),
                #tabPanel("Wczytanie danych",
+               
+############################################# Load data ############################################
+               
                tabPanel("Load data file",
                         sidebarLayout(
                           
@@ -27,6 +30,10 @@ app_ui <- function(request) {
                           mainPanel(tableOutput('dane_raw'))
                         )
                ),
+
+
+################################################# Analysis ###########################################
+
                tabPanel("Analysis",
                         sidebarLayout(
                           sidebarPanel(
@@ -145,6 +152,9 @@ app_ui <- function(request) {
                         
                         
                ),
+
+############################################### Tracking #############################################
+
                tabPanel("Tracking",
                         sidebarLayout(
                           sidebarPanel(
@@ -166,6 +176,10 @@ app_ui <- function(request) {
                           )
                         )
                ),
+
+
+########################################## Comparison ################################################
+
                tabPanel("Strains comparison",
                         #sidebarLayout(sidebarPanel(
                         fluidRow(
@@ -451,6 +465,10 @@ app_ui <- function(request) {
                           )
                         )
                ),
+
+                              
+############################################# Help ######################################################
+               
                tabPanel('Help',
                         p("findpeaks looks for maxima in fluorescence profiles generated from time-lapse microscopic movie."),
                         p('Data file should be in txt format and contain two columns: Length of measured hypha and fluorescence intensity. 
@@ -461,16 +479,20 @@ app_ui <- function(request) {
                           href = "https://github.com/astrzalka/findpeaks", "findpeaks"
                         ),
                         p(' '),
-                        p("Background signal can be removed completely or partially depending on the image preprocessing.
+                        p("Background signal can be removed completely or partially depending on the image preprocessing. Complete background removal can be done by minimum gluorescence substraction 
+                        or using a SNIP algorithm from Peaks package.
                         
                         Removal of background signal will not affect the fluorescence intesity of peaks in the results file."),
                         p('Peaks are identified after signal deconvolution using Gaussian with sigma value provided by the user. 
                           Higher sigma value result in broader peaks'),
                         p('Additional smoothing before denconvolution can be achieved using the Markov chain method.'), 
-                        p('Peaks below a given threshold (%) are removed from the analysis. The threshold is calculated for each timepoint separately.'),
-                        p('Erroneously detected peaks can also be removed manually'),
+                        p('Peaks below a given threshold (%) are removed from the analysis. The threshold is calculated for each timepoint separately. Local filtering of peaks is also
+                          available. For each peak ratio of fluorescne vs surrounding background (width can be adjusted by the user) is calculated and peaks below a certain threshold will be removed.
+                          This approach can be helpful in removing false peaks, which can result from noisy fluorescent signal.'),
+                        p('Erroneously detected peaks can also be removed manually using their id number.'),
                         p('All chosen values of parameters are saved in the results. Hypha id and strain name can also be set.'),
                         p("Results can be saved in txt format for further analysis in the application or in another program."),
+                        p("Tracking of detected peaks can be done using nearest neighboor algorithm. Track splitting, one frame gaps and maximal distance for peaks tracking can be adjusted by the user."),
                         p(' '),
                         p('For results analysis multiple txt files (also from different strains) can be uploaded and common plots such as: histogram, density, boxplot, scatterplot can be created.'),
                         p(strong("Application is based upon Peaks package:")),
