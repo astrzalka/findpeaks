@@ -14,7 +14,7 @@ app_ui <- function(request) {
                theme = shinythemes::shinytheme("united"),
                #tabPanel("Wczytanie danych",
                
-############################################# Load data ############################################
+               ############################################# Load data ############################################
                
                tabPanel("Load data file",
                         sidebarLayout(
@@ -30,10 +30,10 @@ app_ui <- function(request) {
                           mainPanel(tableOutput('dane_raw'))
                         )
                ),
-
-
-################################################# Analysis ###########################################
-
+               
+               
+               ################################################# Analysis ###########################################
+               
                tabPanel("Analysis",
                         sidebarLayout(
                           sidebarPanel(
@@ -152,9 +152,9 @@ app_ui <- function(request) {
                         
                         
                ),
-
-############################################### Tracking #############################################
-
+               
+               ############################################### Tracking #############################################
+               
                tabPanel("Tracking",
                         sidebarLayout(
                           sidebarPanel(
@@ -176,10 +176,10 @@ app_ui <- function(request) {
                           )
                         )
                ),
-
-
-########################################## Comparison ################################################
-
+               
+               
+               ########################################## Comparison ################################################
+               
                tabPanel("Strains comparison",
                         #sidebarLayout(sidebarPanel(
                         fluidRow(
@@ -380,43 +380,43 @@ app_ui <- function(request) {
                                                                    textInput('porownania', 'Provide groups for comaprison, please use format:
                                           Typ_A Typ_B;Typ_A Typ_C')
                                                   ),
-                                                  radioButtons('punkty', 'Include all observations?', 
-                                                               c('No' = 'none', 'Yes (beeswarm)' = 'beeswarm', 
-                                                                 'Yes (quasirandom)' = 'quasirandom'), 
-                                                               inline = TRUE),
-                                                  conditionalPanel(condition ='input.porownanie != "brak"' ,
-                                                                   radioButtons('rodzaj_test', 'Choose test type', 
-                                                                                c('t.test' = 't.test', 'wilcoxon' = 'wilcox.test'), inline = TRUE),
-                                                                   radioButtons('p_format', 'Choose p-value format', c('Numeric' = 'p.adj', 'Stars' = 'p.signif'), inline = TRUE)
-                                                  ),
-                                                  radioButtons('anova', 'Add Anova or Kruskal-Wallis test result to the plot?', 
-                                                               c('Np' = 'nie','Anova' = 'anova', 'Kruskal Wallis' = 'kruskal.test'), 
-                                                               selected = 'nie', inline = TRUE),
-                                                  radioButtons('kolory', 'Which color scale should be used?', c('default', 'colorbrewer', 'viridis', 'greyscale', 'custom'),
-                                                               selected = 'default', inline = TRUE),
-                                                  conditionalPanel(
-                                                    condition = "input.kolory == 'colorbrewer'",
-                                                    selectInput('colorbrewer', label = 'Choose colorbrewer scale',
-                                                                choices = c('Set1', 'Set2', 'Set3', 'Pastel1', 'Pastel2', 'Paired', 'Dark2', 'Accent',
-                                                                            'Spectral' ,'RdYlGn','RdYlBu','RdBu', 'PuOr','PRGn','PiYG', 'YlOrRd','YlGnBu',
-                                                                            'PuBuGn','Blues', 'YlGn', 'Reds', 'RdPu', 'Purples', 'OrRd', 'GnBu' ),
-                                                                selected = 'Set1', multiple = FALSE)
-                                                  ),
-                                                  conditionalPanel(
-                                                    condition = "input.kolory == 'viridis'",
-                                                    selectInput('viridis', label = 'Choose viridis scale?',
-                                                                choices = c('viridis', 'magma', 'plasma', 'inferno', 'cividis'),
-                                                                selected = 'viridis', multiple = FALSE)
-                                                  ),
-                                                  conditionalPanel(
-                                                    condition = "input.kolory == 'custom'",
-                                                    textInput('wlasne_kolory', 'Please provide color names for custom scale separated by commas. 
+                                          radioButtons('punkty', 'Include all observations?', 
+                                                       c('No' = 'none', 'Yes (beeswarm)' = 'beeswarm', 
+                                                         'Yes (quasirandom)' = 'quasirandom'), 
+                                                       inline = TRUE),
+                                          conditionalPanel(condition ='input.porownanie != "brak"' ,
+                                                           radioButtons('rodzaj_test', 'Choose test type', 
+                                                                        c('t.test' = 't.test', 'wilcoxon' = 'wilcox.test'), inline = TRUE),
+                                                           radioButtons('p_format', 'Choose p-value format', c('Numeric' = 'p.adj', 'Stars' = 'p.signif'), inline = TRUE)
+                                          ),
+                                          radioButtons('anova', 'Add Anova or Kruskal-Wallis test result to the plot?', 
+                                                       c('Np' = 'nie','Anova' = 'anova', 'Kruskal Wallis' = 'kruskal.test'), 
+                                                       selected = 'nie', inline = TRUE),
+                                          radioButtons('kolory', 'Which color scale should be used?', c('default', 'colorbrewer', 'viridis', 'greyscale', 'custom'),
+                                                       selected = 'default', inline = TRUE),
+                                          conditionalPanel(
+                                            condition = "input.kolory == 'colorbrewer'",
+                                            selectInput('colorbrewer', label = 'Choose colorbrewer scale',
+                                                        choices = c('Set1', 'Set2', 'Set3', 'Pastel1', 'Pastel2', 'Paired', 'Dark2', 'Accent',
+                                                                    'Spectral' ,'RdYlGn','RdYlBu','RdBu', 'PuOr','PRGn','PiYG', 'YlOrRd','YlGnBu',
+                                                                    'PuBuGn','Blues', 'YlGn', 'Reds', 'RdPu', 'Purples', 'OrRd', 'GnBu' ),
+                                                        selected = 'Set1', multiple = FALSE)
+                                          ),
+                                          conditionalPanel(
+                                            condition = "input.kolory == 'viridis'",
+                                            selectInput('viridis', label = 'Choose viridis scale?',
+                                                        choices = c('viridis', 'magma', 'plasma', 'inferno', 'cividis'),
+                                                        selected = 'viridis', multiple = FALSE)
+                                          ),
+                                          conditionalPanel(
+                                            condition = "input.kolory == 'custom'",
+                                            textInput('wlasne_kolory', 'Please provide color names for custom scale separated by commas. 
                                                     Color names should be predefined in R (check:  http://sape.inf.usi.ch/quick-reference/ggplot2/colour) or use
                                                     #FF0000 format'
-                                                    )
-                                                  ),
-                                                  textInput('os_x_box', 'X axis name', 'Variable'),
-                                                  textInput('os_y_box', 'Y axis name', 'Count')
+                                            )
+                                          ),
+                                          textInput('os_x_box', 'X axis name', 'Variable'),
+                                          textInput('os_y_box', 'Y axis name', 'Count')
                                  ),
                                  conditionalPanel(condition = 'input.rodzaj_wykres_summ == "scatter"',
                                                   sliderInput("alpha_point", "Alpha value for points (transparency)", min = 0, max = 1, value = 1, step = 0.1),
@@ -474,9 +474,27 @@ app_ui <- function(request) {
                           )
                         )
                ),
-
-                              
-############################################# Help ######################################################
+               
+               ########################################### Kymograph #######################################
+               
+               tabPanel('Multiple Kymograph',
+                        sidebarLayout(
+                          sidebarPanel(
+                            fileInput('data_kymograph', 
+                                      'Load files with plot profiles (multiple files can be chosen)', 
+                                      multiple = TRUE),
+                          ),
+                          mainPanel(
+                            #tableOutput('test_kymo')
+                            #plotOutput('multiple_kymograph', height = "600px"),
+                          )
+                        )
+                        
+                        
+               ),
+               
+               
+               ############################################# Help ######################################################
                
                tabPanel('Help',
                         p("findpeaks looks for maxima in fluorescence profiles generated from time-lapse microscopic movie."),
@@ -507,7 +525,7 @@ app_ui <- function(request) {
                         p(strong("Application is based upon Peaks package:")),
                         p("Miroslav Morhac (2012). Peaks: Peaks. R package version 0.2.
   https://CRAN.R-project.org/package=Peaks"))
-               
+  
     )
   )
   

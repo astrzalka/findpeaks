@@ -718,4 +718,34 @@ app_server <- function( input, output, session ) {
       dev.off()
     })
   
+  
+  ##################################### multiple kymograph #######################################
+  
+  
+  # load multiple files into shiny using data.table and lapply
+  dane_kymograph <-reactive({
+    file_list <- input$data_kymograph$datapath
+    
+    list <- list()
+    
+    for(i in 1:length(file_list)){
+      
+      plik <- read.table(file_list[i])
+      
+      #plik <- file_list[i]
+      plik <- dodaj_ind(plik)
+      plik$i <- i
+      
+      list[[i]] <- plik
+    }
+    
+    pliki <- do.call(rbind, list)
+    
+    return(pliki)
+  })
+  
+  output$test_kymo <- renderTable(dane_kymograph())
+  
+  
+  
 }
