@@ -640,3 +640,57 @@ summarize_tracks <- function(wynik, filter_length = 3){
   return(wynik_tracks)
   
 }
+
+plot_hyphae_heatmap <- function(data, num_bins = 50, max_time = 150){
+  
+  data %>% 
+    dplyr::filter(time <= max_time) %>%
+    dplyr::group_by(strain) %>%
+    dplyr::mutate(length_perc = length/max(length),
+           dist_tip_perc = dist_tip/max(length),
+           dist_base_perc = dist_base/max(length)) -> data
+  
+  data %>%  dplyr::group_by(strain, time,  
+                    dist_binned = cut(dist_base_perc, 
+                                      breaks = seq(from = 0, to = 1, length.out = num_bins)), 
+                    .drop = FALSE) %>%
+    dplyr::count() %>%
+    dplyr::group_by(time) %>%
+    dplyr::mutate(percent = n/sum(n),
+           start = seq(from = 0, to = 1, length.out = num_bins-1)) -> data_timepoint
+  
+  data %>%  dplyr::group_by(strain, time) %>%
+    dplyr::summarise(max_length = max(length_perc)) -> length_timepoint
+  
+  data_timepoint %>%  dplyr::left_join(length_timepoint) %>%
+    dplyr::filter(start <= max_length) -> data_timepoint
+  
+  data %>%
+    dplyr::group_by(strain, time, number_comp) %>%
+    dplyr::summarise(srednia = mean(dist_base_perc)) ->
+    #tidyr::pivot_wider(names_from = number_comp, values_from = srednia) -> 
+    timepoint2
+  
+  data_timepoint %>%  dplyr::left_join(timepoint2) -> data_timepoint
+  
+  
+  p <- ggplot2::ggplot(data = data_timepoint, ggplot2::aes(x = time, y = start, fill = percent))
+  p <- p + ggplot2::geom_tile()+
+    ggplot2::facet_wrap(~strain)+
+    ggplot2::xlim(NA,max_time)+
+    ggplot2::scale_fill_viridis_c(option = 'D', 
+                         values = c(0,0.01,0.05,0.1,0.15, 0.2,0.25,0.3,0.4,1), 
+                         labels = c('0%', '25%', '50%', '75%', '100%'), name = '')+
+    ggplot2::geom_line(ggplot2::aes(x = time, y = srednia, group = factor(number_comp)), 
+                       color = 'white', linetype = 2)+
+    ggplot2::xlab('Time [min]')+
+    ggplot2::ylab(expression('Cell length %'))+
+    ggplot2::theme_minimal()+
+    ggplot2::theme(legend.position = 'bottom',legend.key.height = grid::unit(0.2, 'cm'), 
+          legend.box.spacing = grid::unit(0, 'cm'), legend.key.width = grid::unit(1, 'cm'), 
+          panel.grid.major = ggplot2::element_blank(), panel.grid.minor = ggplot2::element_blank())
+  
+  
+  return(p)
+  
+}

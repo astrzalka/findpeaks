@@ -509,6 +509,20 @@ app_server <- function( input, output, session ) {
     
   })
   
+  heatmapInput <- reactive({
+    
+    wb <- dane_porownanie()
+    wb %>% dplyr::filter(number_comp <= input$n_kompl) %>%
+      dplyr::mutate(number_comp = factor(number_comp))-> wb
+    
+    p <- plot_hyphae_heatmap(data = wb,
+                             num_bins = input$bins_heatmap,
+                             max_time = input$max_time_heatmap)
+    
+    return(p)
+    
+  })
+  
   
   output$wykres_podsumowanie <- renderPlot({
     if (is.null(input$wyniki))
@@ -521,6 +535,8 @@ app_server <- function( input, output, session ) {
       print(boxplotInput())
     } else if(input$rodzaj_wykres_summ == 'scatter'){
       print(scatterInput())
+    } else if(input$rodzaj_wykres_summ == 'heatmap'){
+      print(heatmapInput())
     }
   })
   
@@ -688,8 +704,9 @@ app_server <- function( input, output, session ) {
       return(boxplotInput())
     } else if(input$rodzaj_wykres_summ == 'scatter'){
       return(scatterInput())
+    } else if(input$rodzaj_wykres_summ == 'heatmap'){
+      return(heatmapInput())
     }
-    
     
   })
   

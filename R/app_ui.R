@@ -196,7 +196,8 @@ app_ui <- function(request) {
                                              choices = list('Histogram' = 'hist',
                                                             "Density plot" = 'density',
                                                             'Boxplot' = 'box',
-                                                            'Scatterplot' = 'scatter'
+                                                            'Scatterplot' = 'scatter',
+                                                            'Heatmap' = 'heatmap'
                                              )),
                                  conditionalPanel(condition = 'input.rodzaj_wykres_summ == "hist" | input.rodzaj_wykres_summ == "density"',
                                                   selectInput('os_x_hist', 'Choose variable for analysis',
@@ -262,6 +263,14 @@ app_ui <- function(request) {
                                                                              'Complex' = 'number_comp'))
                                                   
                                  ),
+                                 conditionalPanel(condition = 'input.rodzaj_wykres_summ == "heatmap"',
+                                                  numericInput('bins_heatmap', 'Number of bins for the heatmap?', 
+                                                               value = 50, min = 5, max = 200, step = 5),
+                                                  numericInput('max_time_heatmap', 'Maximum time for heatmap',
+                                                               value = 200, min = 10)
+                                                  
+                                                  
+                                 )
                                  
                           ),
                           # downloadButton('download_plot', 'Pobierz wykres (dodaj .png do nazwy pliku)'),
@@ -492,7 +501,7 @@ app_ui <- function(request) {
                         p('Erroneously detected peaks can also be removed manually using their id number.'),
                         p('All chosen values of parameters are saved in the results. Hypha id and strain name can also be set.'),
                         p("Results can be saved in txt format for further analysis in the application or in another program."),
-                        p("Tracking of detected peaks can be done using nearest neighboor algorithm. Track splitting, one frame gaps and maximal distance for peaks tracking can be adjusted by the user."),
+                        p("Tracking of detected peaks can be done using nearest neighboor algorithm. Track splitting, one frame gaps and maximal distance for peaks tracking can be adjusted by the user.s"),
                         p(' '),
                         p('For results analysis multiple txt files (also from different strains) can be uploaded and common plots such as: histogram, density, boxplot, scatterplot can be created.'),
                         p(strong("Application is based upon Peaks package:")),
