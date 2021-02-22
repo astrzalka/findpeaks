@@ -475,18 +475,29 @@ app_ui <- function(request) {
                         )
                ),
                
-               ########################################### Kymograph #######################################
+               ########################################### Multiple Kymograph #######################################
                
-               tabPanel('Multiple Kymograph',
+               tabPanel('Multiple Kymograph (beta)',
                         sidebarLayout(
                           sidebarPanel(
                             fileInput('data_kymograph', 
                                       'Load files with plot profiles (multiple files can be chosen)', 
                                       multiple = TRUE),
+                            numericInput('bins_kymograph', 'Number of bins for the kymograph?', 
+                                         value = 100, min = 5, max = 200, step = 5),
+                            selectInput('fun_kymograph', 'Which function should be used to summarise kymograph?',
+                                      multiple = FALSE, selected = 'median', 
+                                      choices = c('median', 'mean', 'sd', 'max', 'sum')),
+                            selectInput('fill_kymograph', 'Choose color option for the kymograph',
+                                        choices = c('A', 'B', 'C', 'D', 'E'), selected = 'D', multiple = FALSE),
+                            numericInput('lapse_kymograph', 'Choose lapse value', value = 10),
+                            numericInput('max_kymograph', 'Choose maximal value for x scale (frame not time)', 
+                                         value = 100)
+                            
                           ),
                           mainPanel(
                             #tableOutput('test_kymo')
-                            #plotOutput('multiple_kymograph', height = "600px"),
+                            plotOutput('multiple_kymograph', height = "800px"),
                           )
                         )
                         

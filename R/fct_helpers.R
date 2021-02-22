@@ -694,3 +694,47 @@ plot_hyphae_heatmap <- function(data, num_bins = 50, max_time = 150){
   return(p)
   
 }
+
+plot_multiple_kymograph <- function(data, num_bins = 100, fun = 'median', color_option = 'D', lapse){
+  
+  data %>% 
+    dplyr::mutate(length_perc = distance/max(distance)) %>%
+    dplyr::group_by(i,
+                    ind,  
+                    dist_binned = cut(length_perc, 
+                                      breaks = seq(from = -0.0000001, to = 1, length.out = num_bins)), 
+                    .drop = TRUE) %>%
+    dplyr::summarise(int = mean(int, na.rm = TRUE)) %>%
+    dplyr::group_by(ind, dist_binned) %>%
+    dplyr::summarise(mean = mean(int, na.rm = TRUE),
+                     sum = sum(int, na.rm = TRUE),
+                     median = median(int, na.rm = TRUE),
+                     sd = sd(int, na.rm = TRUE),
+                     max = max(int, na.rm = TRUE)) %>%
+    dplyr::mutate(dist = sub(x = dist_binned, pattern = '\\(', replacement = ''),
+                  dist = sub(x = dist, pattern = '\\]', replacement = ''),
+                  dist = sub(x = dist, pattern = ',[0-9.]{1,}', replacement = ''),
+                  dist = as.numeric(dist)) -> timepoint_data
+  
+  if(fun == 'median'){
+    timepoint_data$fun <- timepoint_data$median
+  } else if(fun == 'mean'){
+    timepoint_data$fun <- timepoint_data$mean
+  } else if(fun == 'sum'){
+    timepoint_data$fun <- timepoint_data$sum
+  } else if(fun == 'sd'){
+    timepoint_data$fun <- timepoint_data$sd
+  } else if(fun == 'max'){
+    timepoint_data$fun <- timepoint_data$max
+  }
+  
+  p <- timepoint_data %>% ggplot2::ggplot(ggplot2::aes(x = (ind*lapse)-lapse, y = dist, fill = fun))+
+    ggplot2::geom_tile(height = (1/num_bins) + 0.001)+
+    #ggplot2::xlim(0, 20)+
+    ggplot2::scale_fill_viridis_c(option = color_option, name = '')+
+    ggplot2::theme_minimal()+
+    ggplot2::xlab('Time [min]')+
+    ggplot2::ylab('% length')
+  
+  return(p)
+}

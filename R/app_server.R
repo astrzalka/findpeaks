@@ -732,7 +732,13 @@ app_server <- function( input, output, session ) {
       
       plik <- read.table(file_list[i])
       
+      # if(ncol(plik) > 2){
+      #   plik <- plik[,-1]
+      # }
+      # 
       #plik <- file_list[i]
+      colnames(plik) <- c('distance', 'int')
+      
       plik <- dodaj_ind(plik)
       plik$i <- i
       
@@ -746,6 +752,22 @@ app_server <- function( input, output, session ) {
   
   output$test_kymo <- renderTable(dane_kymograph())
   
+  multiplekymographInput <- reactive({
+    
+    wb <- dane_kymograph()
+    
+    wb %>% dplyr::filter(ind <= input$max_kymograph) -> wb
+    
+    p <- plot_multiple_kymograph(data = wb,
+                                 num_bins = input$bins_kymograph,
+                                 fun = input$fun_kymograph,
+                                 color_option = input$fill_kymograph,
+                                 lapse = input$lapse_kymograph)
+    
+    return(p)
+    
+  })
   
+  output$multiple_kymograph <- renderPlot({multiplekymographInput()})
   
 }
