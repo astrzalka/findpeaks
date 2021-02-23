@@ -757,16 +757,17 @@ plot_demograph <- function(data, color = 'D', normalize_fluo = FALSE){
   dist = data$distance[2] - data$distance[1]
   
   # has to plot as geom_rect - geom_tiles fails on length (don't know why)
+  # add 0.01 to avoid white lines on kymograph
   if(normalize_fluo){
-    data %>% ggplot2::ggplot(ggplot2::aes(xmin = length - dist/2,
-                                          xmax = length + dist/2,
+    data %>% ggplot2::ggplot(ggplot2::aes(xmin = length - (dist/2) - 0.01,
+                                          xmax = length + (dist/2) + 0.01,
                                           ymin = ind-0.5,
                                           ymax = ind+0.5,
                                           fill = int_nor)) -> p
   } else {
     
-    data %>% ggplot2::ggplot(ggplot2::aes(xmin = length - dist/2,
-                                          xmax = length + dist/2,
+    data %>% ggplot2::ggplot(ggplot2::aes(xmin = length - (dist/2) - 0.01,
+                                          xmax = length + (dist/2) + 0.01,
                                           ymin = ind-0.5,
                                           ymax = ind+0.5,
                                           fill = int)) -> p
@@ -776,7 +777,9 @@ plot_demograph <- function(data, color = 'D', normalize_fluo = FALSE){
     ggplot2::scale_fill_viridis_c(option = color, name = 'Fluorescence intensity')+
     ggplot2::theme_minimal()+
     ggplot2::theme(legend.position = 'bottom')+
-    ggplot2::xlab('Cell length') -> p
+    ggplot2::xlab('Cell length')+
+    ggplot2::theme(text = ggplot2::element_text(size = 14),
+                   legend.key.width = grid::unit(2, 'cm'))-> p
   
   return(p)
 }

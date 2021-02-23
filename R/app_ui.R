@@ -513,15 +513,20 @@ app_ui <- function(request) {
                             fileInput('data_demograph', 
                                       'Load files with plot profiles (multiple files can be chosen)', 
                                       multiple = TRUE),
+                            checkboxInput('header_demo', 'Does your have column names', value = TRUE),
                             selectInput('fill_demograph', 'Choose color option for the demograph',
                                         choices = c('A', 'B', 'C', 'D', 'E'), selected = 'D', multiple = FALSE),
-                            checkboxInput('nor_fluo', 'Normalize fluorescence intensity?', value = FALSE)
+                            checkboxInput('nor_fluo', 'Normalize fluorescence intensity?', value = FALSE),
+                            downloadButton('download_demo', 'Download plot'),
+                            numericInput('width_demo', 'Width [cm]', 20, min = 5, max = 25),
+                            numericInput('height_demo', 'Height [cm]', 14, min = 5, max = 25),
+                            numericInput('res_demo', 'Resolution', 200, min = 100, max = 500)
                             
                             
                           ),
                           mainPanel(
                             #tableOutput('test_demo')
-                            #plotOutput('demograph', height = "800px"),
+                            plotOutput('demograph', height = "800px"),
                           )
                           
                         )

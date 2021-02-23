@@ -16,7 +16,7 @@ app_server <- function( input, output, session ) {
   library.dynam('Peaks', 'Peaks', lib.loc=NULL) 
   library(magrittr)
   
-
+  
   ################################ data upload ###################################################### 
   
   
@@ -79,7 +79,7 @@ app_server <- function( input, output, session ) {
   
   output$dane_raw <- renderTable(dane())
   
-
+  
   ############################### peaks identification ########################################
   
   
@@ -248,7 +248,7 @@ app_server <- function( input, output, session ) {
     }
   })
   
-
+  
   ##################################### tracking analysis ##############################################
   
   data_for_tracks <- reactive({
@@ -325,7 +325,7 @@ app_server <- function( input, output, session ) {
     
   )
   
-
+  
   
   ################################# analysis of multiple hyphae/strains ################################
   
@@ -769,5 +769,44 @@ app_server <- function( input, output, session ) {
   })
   
   output$multiple_kymograph <- renderPlot({multiplekymographInput()})
+  
+  #################################### Demograph ########################################################
+  
+  # load multiple files into shiny using data.table and lapply
+  dane_demograph <-reactive({
+    data <- data.table::rbindlist(lapply(input$data_demograph$datapath, read.table, header = input$header_demo),
+                          use.names = TRUE, fill = TRUE)
+    
+    colnames(data) <- c('distance', 'int')
+    
+    data <- dodaj_ind(data)
+    
+    return(data)
+  })
+  
+  output$test_demo <- renderTable(dane_demograph())
+  
+  demographInput <- reactive({
+    
+    wb <- dane_demograph()
+    
+    p <- plot_demograph(data = wb,
+                        color = input$fill_demograph,
+                        normalize_fluo = input$nor_fluo)
+    
+    return(p)
+    
+  })
+  
+  output$demograph <- renderPlot({demographInput()})
+  
+  output$download_demo <- downloadHandler(
+    filename = function() { paste(input$dataset, '.png', sep='') },
+    content = function(file) {
+      png(file, res = input$res_demo, width = input$width_demo, input$height_demo, unit = 'cm')
+      print(demographInput())
+      dev.off()
+    })
+  
   
 }
