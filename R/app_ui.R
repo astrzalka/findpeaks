@@ -486,8 +486,8 @@ app_ui <- function(request) {
                             numericInput('bins_kymograph', 'Number of bins for the kymograph?', 
                                          value = 100, min = 5, max = 200, step = 5),
                             selectInput('fun_kymograph', 'Which function should be used to summarise kymograph?',
-                                      multiple = FALSE, selected = 'median', 
-                                      choices = c('median', 'mean', 'sd', 'max', 'sum')),
+                                        multiple = FALSE, selected = 'median', 
+                                        choices = c('median', 'mean', 'sd', 'max', 'sum')),
                             selectInput('fill_kymograph', 'Choose color option for the kymograph',
                                         choices = c('A', 'B', 'C', 'D', 'E'), selected = 'D', multiple = FALSE),
                             numericInput('lapse_kymograph', 'Choose lapse value', value = 10),
@@ -503,6 +503,30 @@ app_ui <- function(request) {
                         
                         
                ),
+               
+               
+               ############################################### Demograph #############################################
+               
+               tabPanel('Demograph (beta)',
+                        sidebarLayout(
+                          sidebarPanel(
+                            fileInput('data_demograph', 
+                                      'Load files with plot profiles (multiple files can be chosen)', 
+                                      multiple = TRUE),
+                            selectInput('fill_demograph', 'Choose color option for the demograph',
+                                        choices = c('A', 'B', 'C', 'D', 'E'), selected = 'D', multiple = FALSE),
+                            checkboxInput('nor_fluo', 'Normalize fluorescence intensity?', value = FALSE)
+                            
+                            
+                          ),
+                          mainPanel(
+                            #tableOutput('test_demo')
+                            #plotOutput('demograph', height = "800px"),
+                          )
+                          
+                        )
+               ),
+               
                
                
                ############################################# Help ######################################################

@@ -647,17 +647,17 @@ plot_hyphae_heatmap <- function(data, num_bins = 50, max_time = 150){
     dplyr::filter(time <= max_time) %>%
     dplyr::group_by(strain) %>%
     dplyr::mutate(length_perc = length/max(length),
-           dist_tip_perc = dist_tip/max(length),
-           dist_base_perc = dist_base/max(length)) -> data
+                  dist_tip_perc = dist_tip/max(length),
+                  dist_base_perc = dist_base/max(length)) -> data
   
   data %>%  dplyr::group_by(strain, time,  
-                    dist_binned = cut(dist_base_perc, 
-                                      breaks = seq(from = 0, to = 1, length.out = num_bins)), 
-                    .drop = FALSE) %>%
+                            dist_binned = cut(dist_base_perc, 
+                                              breaks = seq(from = 0, to = 1, length.out = num_bins)), 
+                            .drop = FALSE) %>%
     dplyr::count() %>%
     dplyr::group_by(time) %>%
     dplyr::mutate(percent = n/sum(n),
-           start = seq(from = 0, to = 1, length.out = num_bins-1)) -> data_timepoint
+                  start = seq(from = 0, to = 1, length.out = num_bins-1)) -> data_timepoint
   
   data %>%  dplyr::group_by(strain, time) %>%
     dplyr::summarise(max_length = max(length_perc)) -> length_timepoint
@@ -679,16 +679,16 @@ plot_hyphae_heatmap <- function(data, num_bins = 50, max_time = 150){
     ggplot2::facet_wrap(~strain)+
     ggplot2::xlim(NA,max_time)+
     ggplot2::scale_fill_viridis_c(option = 'D', 
-                         values = c(0,0.01,0.05,0.1,0.15, 0.2,0.25,0.3,0.4,1), 
-                         labels = c('0%', '25%', '50%', '75%', '100%'), name = '')+
+                                  values = c(0,0.01,0.05,0.1,0.15, 0.2,0.25,0.3,0.4,1), 
+                                  labels = c('0%', '25%', '50%', '75%', '100%'), name = '')+
     ggplot2::geom_line(ggplot2::aes(x = time, y = srednia, group = factor(number_comp)), 
                        color = 'white', linetype = 2)+
     ggplot2::xlab('Time [min]')+
     ggplot2::ylab(expression('Cell length %'))+
     ggplot2::theme_minimal()+
     ggplot2::theme(legend.position = 'bottom',legend.key.height = grid::unit(0.2, 'cm'), 
-          legend.box.spacing = grid::unit(0, 'cm'), legend.key.width = grid::unit(1, 'cm'), 
-          panel.grid.major = ggplot2::element_blank(), panel.grid.minor = ggplot2::element_blank())
+                   legend.box.spacing = grid::unit(0, 'cm'), legend.key.width = grid::unit(1, 'cm'), 
+                   panel.grid.major = ggplot2::element_blank(), panel.grid.minor = ggplot2::element_blank())
   
   
   return(p)
@@ -735,6 +735,48 @@ plot_multiple_kymograph <- function(data, num_bins = 100, fun = 'median', color_
     ggplot2::theme_minimal()+
     ggplot2::xlab('Time [min]')+
     ggplot2::ylab('% length')
+  
+  return(p)
+}
+
+
+plot_demograph <- function(data, color = 'D', normalize_fluo = FALSE){
+  
+  data %>% dplyr::group_by(ind) %>%
+    dplyr::mutate(length = distance - (max(distance)/2),
+                  max = max(distance)) %>%
+    dplyr::arrange(-max, ind, distance) -> data # arrange data so that smallest cell is on top
+  
+  levels <- unique(data$ind)
+  
+  # change ind to factor with new levels determined by previous arranging, then change to numeric so that levels become new values
+  data %>% dplyr::mutate(ind = factor(ind, levels = levels),
+                         ind = as.numeric(ind),
+                         int_nor = int/max(int)) -> data
+  
+  dist = data$distance[2] - data$distance[1]
+  
+  # has to plot as geom_rect - geom_tiles fails on length (don't know why)
+  if(normalize_fluo){
+    data %>% ggplot2::ggplot(ggplot2::aes(xmin = length - dist/2,
+                                          xmax = length + dist/2,
+                                          ymin = ind-0.5,
+                                          ymax = ind+0.5,
+                                          fill = int_nor)) -> p
+  } else {
+    
+    data %>% ggplot2::ggplot(ggplot2::aes(xmin = length - dist/2,
+                                          xmax = length + dist/2,
+                                          ymin = ind-0.5,
+                                          ymax = ind+0.5,
+                                          fill = int)) -> p
+  }
+  
+  p + ggplot2::geom_rect()+
+    ggplot2::scale_fill_viridis_c(option = color, name = 'Fluorescence intensity')+
+    ggplot2::theme_minimal()+
+    ggplot2::theme(legend.position = 'bottom')+
+    ggplot2::xlab('Cell length') -> p
   
   return(p)
 }
