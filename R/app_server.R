@@ -125,10 +125,7 @@ app_server <- function( input, output, session ) {
     
   })
   
-  
-  
-  
-  output$wykres <- renderPlot ({
+  plot_analysis <- reactive({
     
     wyn <- wynik()
     
@@ -145,6 +142,13 @@ app_server <- function( input, output, session ) {
     
   })
   
+  
+  output$wykres <- renderPlot ({
+    
+    plot_analysis()
+    
+  })
+  
   output$tabela <- renderTable({
     wyn <- wynik()
     
@@ -152,18 +156,24 @@ app_server <- function( input, output, session ) {
     
   })
   
-  output$strzepka <- renderPlot({
+  plot_strzepka <- reactive({
     
     wyn <- wynik()
     
     p <- plot_scheme_find_peaks(wyn[[1]], odwroc = input$odwroc, color_point = input$punkt)
     
-    print(p)
+    return(p)
+    
     
   })
   
+  output$strzepka <- renderPlot({
+    
+    plot_strzepka()
+    
+  })
   
-  output$kymograf <- renderPlot({
+  plot_kymograph <- reactive({
     
     wyn <- wynik()
     
@@ -172,7 +182,13 @@ app_server <- function( input, output, session ) {
     p <- plot_kymograph_find_peaks(dane_raw = dane1, dane_find = wyn[[1]], odwroc = input$odwroc, 
                                    pokaz = input$pokaz, color_point = input$punkt, 
                                    color_gradient = input$gradient, lapse = input$lapse)
-    print(p)
+    return(p)
+    
+  })
+  
+  output$kymograf <- renderPlot({
+    
+   plot_kymograph()
     
   })
   
@@ -247,6 +263,31 @@ app_server <- function( input, output, session ) {
       
     }
   })
+  
+  getactiveplot_analysis <- reactive({
+    
+    if(input$rodzaj_wykres == 'wszystko'){
+      return(plot_analysis())
+    } else if(input$rodzaj_wykres == 'schemat'){
+      return(plot_strzepka())
+    } else if(input$rodzaj_wykres == 'kymograf'){
+      return(plot_kymograph())
+    } else if(input$rodzaj_wykres == 'ridges'){
+      return(plot_ridges())
+    } 
+    
+  })
+  
+  output$download_plot_analysis <- downloadHandler(
+    filename = function() { paste(input$dataset, '.png', sep='') },
+    content = function(file) {
+      png(file, res = input$res_plot_analysis,
+          width = input$width_plot_analysis,
+          input$height_plot_analysis,
+          unit = 'cm')
+      print(getactiveplot_analysis())
+      dev.off()
+    })
   
   
   ##################################### tracking analysis ##############################################

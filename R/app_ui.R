@@ -116,6 +116,10 @@ app_ui <- function(request) {
                             textInput('id', 'Choose cell id', value = 'x_1'),
                             textInput('szczep', 'Choose strain name', value = 'strain'),
                             downloadButton('download_data', 'Download results in txt file'),
+                            downloadButton('download_plot_analysis', 'Download plot'),
+                            numericInput('width_plot_analysis', 'Width [cm]', 20, min = 5, max = 25),
+                            numericInput('height_plot_analysis', 'Height [cm]', 14, min = 5, max = 25),
+                            numericInput('res_plot_analysis', 'Resolution', 200, min = 100, max = 500),
                             width = 3
                           ),
                           mainPanel(
