@@ -30,7 +30,7 @@ usethis::use_package( "bioimagetools" )
 usethis::use_package( "EBImage" )
 usethis::use_package( "pixmap" )
 usethis::use_package( "colourpicker" )
-usethis::use_package( "rtiff" )
+
 
 ## Add modules ----
 ## Create a module infrastructure in R/

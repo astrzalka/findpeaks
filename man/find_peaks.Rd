@@ -29,7 +29,7 @@ find_peaks(
 
 \item{threshold}{powyżej jakiego poziomu ma zaznaczać piki, procent wysokości najwyższego piku}
 
-\item{back}{lepiej zostawić FALSE}
+\item{back}{"No" odejmie tylko procent tła, "minimum" zostanie odjęta wartość minimalna, "Peaks" zostanie użyta funkcja obecna w pakiecie Peaks}
 
 \item{lapse}{czas pomiędzy klatkami}
 

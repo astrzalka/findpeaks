@@ -5,7 +5,7 @@
 #' @param m jak ma wygładzać dane, przy FALSE znajduje więcej pików
 #' @param procent  ile tła ma odjąć, rozsądny zakres to od 1(całość) do 0.01 (1 procent)
 #' @param threshold powyżej jakiego poziomu ma zaznaczać piki, procent wysokości najwyższego piku
-#' @param back lepiej zostawić FALSE 
+#' @param back "No" odejmie tylko procent tła, "minimum" zostanie odjęta wartość minimalna, "Peaks" zostanie użyta funkcja obecna w pakiecie Peaks
 #' @param lapse czas pomiędzy klatkami
 #' @param ... 
 #'
