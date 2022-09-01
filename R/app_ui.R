@@ -10,7 +10,7 @@ app_ui <- function(request) {
     # Leave this function for adding external resources
     golem_add_external_resources(),
     # List the first level UI elements here 
-    navbarPage("Find Peaks",
+    navbarPage("Find Peaks version 1.0",
                theme = shinythemes::shinytheme("united"),
                #tabPanel("Wczytanie danych",
                
