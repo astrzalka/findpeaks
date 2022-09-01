@@ -13,9 +13,16 @@
 #' @export
 #'
 #' @examples
-find_peaks <- function (ramka, s = 2, m = FALSE, procent = 1, threshold=10, 
-                        back='No', lapse = 10, filter_local = FALSE, 
-                        filter_local_int = 1.1, filter_local_width = 2, ...) { 
+find_peaks <- function (ramka, 
+                        s = 2, 
+                        m = FALSE, 
+                        procent = 1, 
+                        threshold=10, 
+                        back='No', 
+                        lapse = 10, 
+                        filter_local = FALSE, 
+                        filter_local_int = 1.1, 
+                        filter_local_width = 2, ...) { 
   
   library(Peaks)
   library.dynam('Peaks', 'Peaks', lib.loc=NULL) 
@@ -294,8 +301,8 @@ plot_kymograph_find_peaks <- function(dane_raw, dane_find, odwroc = TRUE, pokaz 
   
   p <- ggplot2::ggplot(dane_raw)
   
-  x_shift <- lapse/2
-  y_shift <- (dane_raw$V1[2] - dane_raw$V1[1])/2
+  x_shift <- lapse/2  + 0.1
+  y_shift <- (dane_raw$V1[2] - dane_raw$V1[1])/2 + 0.01
   
   if(as.logical(odwroc == TRUE)){
     #p <- p + ggplot2::geom_tile(ggplot2::aes(x = (ind*lapse), y = V1, fill = V2))

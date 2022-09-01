@@ -75,7 +75,14 @@ All analysis and plotting functions can be also used outside of shiny applicatio
 
 data <- findpeaks::dane_2
 
-result <- findpeaks::find_peaks(data, s = 2.5, m = FALSE, procent = 0.4, threshold = 41)
+data <- findpeaks::dodaj_ind(data)
+
+result <- findpeaks::find_peaks(ramka = data,
+                                s = 2.5,
+                                m = FALSE,
+                                procent = 0.4,
+                                threshold = 41,
+                                back = 'No')
 
 findpeaks::plot_find_peaks(dane_raw = result[[2]], result[[1]])
 

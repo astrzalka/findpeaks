@@ -85,9 +85,14 @@ app_server <- function( input, output, session ) {
   
   wynik <- reactive({
     
-    x <- find_peaks(dane(), s = input$sigma, procent = input$procent, m = as.logical(input$markov), 
-                    threshold = input$threshold, lapse = input$lapse, back = input$background_type,
-                    filter_local = input$local, filter_local_int = input$local_int, 
+    x <- find_peaks(dane(), s = input$sigma, 
+                    procent = input$procent, 
+                    m = as.logical(input$markov), 
+                    threshold = input$threshold, 
+                    lapse = input$lapse, 
+                    back = input$background_type,
+                    filter_local = input$local, 
+                    filter_local_int = input$local_int, 
                     filter_local_width = input$local_width)
     #     print('nie')
     #     print(nrow(x[[1]]))
@@ -373,8 +378,16 @@ app_server <- function( input, output, session ) {
   
   # load multiple files into shiny using data.table and lapply
   dane_porownanie <-reactive({
-    data.table::rbindlist(lapply(input$wyniki$datapath, read.table),
+    data <- data.table::rbindlist(lapply(input$wyniki$datapath, read.table),
                           use.names = TRUE, fill = TRUE)
+    
+    #data <- readr::read_table(file = input$wyniki$datapath, col_names = TRUE)
+    
+    #data$dist_base <- as.numeric(data$dist_base)
+    #data$dist_between <- as.numeric(data$dist_between)
+    
+    return(data)
+    
   })
   
   output$tabela_wyniki <- DT::renderDataTable(dane_porownanie()[,-c(4,7:8,16)], options = list(pageLength = 50))

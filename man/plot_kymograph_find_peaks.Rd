@@ -29,9 +29,6 @@ plot_kymograph_find_peaks(
 
 \item{lapse}{czas pomiędzy klatkami}
 }
-\value{
-
-}
 \description{
 Rysuje kymograf fluorescencji na podstawie profilu, zaznacza znalezione maksima
 }
