@@ -4,7 +4,6 @@
 #'     DO NOT REMOVE.
 #' @import shiny
 #' @import ggpubr
-#' @import rtiff
 #' @noRd
 
 options(shiny.maxRequestSize=30*1024^2) 
@@ -186,7 +185,8 @@ app_server <- function( input, output, session ) {
     
     p <- plot_kymograph_find_peaks(dane_raw = dane1, dane_find = wyn[[1]], odwroc = input$odwroc, 
                                    pokaz = input$pokaz, color_point = input$punkt, 
-                                   color_gradient = input$gradient, lapse = input$lapse)
+                                   color_gradient = input$gradient, lapse = input$lapse, 
+                                   max_fluo = input$max_fluo, na_color = input$gradient)
     return(p)
     
   })
@@ -240,35 +240,35 @@ app_server <- function( input, output, session ) {
     
   })
   
-  #load tiff file
+  # #load tiff file
+  # 
+  # image_tiff <- reactive({
+  #   
+  #   inFile <- input$image_file
+  #   
+  #   tiff <- bioimagetools::readTIF(inFile$datapath)
+  #   
+  #   return(tiff)
+  # })
   
-  image_tiff <- reactive({
-    
-    inFile <- input$image_file
-    
-    tiff <- bioimagetools::readTIF(inFile$datapath)
-    
-    return(tiff)
-  })
-  
-  #plot tiff
-  
-  output$plot_tiff <- renderPlot({
-    
-    tiff <- image_tiff()
-    
-    if(input$display_all == FALSE){
-      
-      pixmap::plot(tiff[,,input$channel,input$frame]*(1/mean(tiff[,,input$channel,])))
-    } else {
-      
-      norm <- (1/mean(tiff[,,input$channel,])/2)
-      
-      EBImage::display(EBImage::rotate(tiff[,,input$channel,]*norm, angle = 90), method = 'raster', all = TRUE)
-      
-    }
-  })
-  
+  # #plot tiff
+  # 
+  # output$plot_tiff <- renderPlot({
+  #   
+  #   tiff <- image_tiff()
+  #   
+  #   if(input$display_all == FALSE){
+  #     
+  #     pixmap::plot(tiff[,,input$channel,input$frame]*(1/mean(tiff[,,input$channel,])))
+  #   } else {
+  #     
+  #     norm <- (1/mean(tiff[,,input$channel,])/2)
+  #     
+  #     EBImage::display(EBImage::rotate(tiff[,,input$channel,]*norm, angle = 90), method = 'raster', all = TRUE)
+  #     
+  #   }
+  # })
+  # 
   getactiveplot_analysis <- reactive({
     
     if(input$rodzaj_wykres == 'wszystko'){

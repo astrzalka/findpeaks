@@ -24,8 +24,8 @@ app_ui <- function(request) {
                             checkboxInput('example', 'Do you want to use example dataset?'),
                             fileInput("dane", 'Choose txt file',
                                       accept=c('.txt')),
-                            checkboxInput('header', 'Does your dataset contain headers', value = TRUE),
-                            fileInput("image_file", "Load tiff file (optional)")
+                            checkboxInput('header', 'Does your dataset contain headers', value = TRUE)
+                            #fileInput("image_file", "Load tiff file (optional)")
                           ),
                           mainPanel(tableOutput('dane_raw'))
                         )
@@ -103,7 +103,9 @@ app_ui <- function(request) {
                                                          "green3"),
                                              radioButtons("pokaz", "Show found maximas on the kymograph?", 
                                                           choices = list("TRUE" = "TRUE", "FALSE" = "FALSE"), selected = "TRUE",
-                                                          inline = TRUE)
+                                                          inline = TRUE),
+                                             numericInput('max_fluo', "Choose maximum value for the kymograph gradient scale",
+                                                          value = NA, min = 0, max = 10000, step = 10)
                             ),
                             conditionalPanel(condition = 'input.rodzaj_wykres == "ridges"',
                                              radioButtons('norm_ridges', 'Perform data normalization for each timepoint individually?', 
@@ -126,16 +128,16 @@ app_ui <- function(request) {
                             tabsetPanel(type = "tabs", 
                                         tabPanel("Plots", 
                                                  conditionalPanel('input.rodzaj_wykres == "wszystko"',
-                                                                  plotOutput("wykres", height = 650)
+                                                                  plotOutput("wykres", height = 1100)
                                                  ),
                                                  conditionalPanel('input.rodzaj_wykres == "schemat"',
-                                                                  plotOutput("strzepka", height = 650)
+                                                                  plotOutput("strzepka", height = 1100)
                                                  ),
                                                  conditionalPanel('input.rodzaj_wykres == "kymograf"',
-                                                                  plotOutput("kymograf", height = 650)
+                                                                  plotOutput("kymograf", height = 1100)
                                                  ),
                                                  conditionalPanel('input.rodzaj_wykres == "ridges"',
-                                                                  plotOutput("ridges", height = 650)
+                                                                  plotOutput("ridges", height = 1100)
                                                  )
                                         ),
                                         #tabPanel("Schemat komórki", plotOutput("strzepka", height = 700)),
@@ -174,7 +176,7 @@ app_ui <- function(request) {
                             downloadButton('download_data_tracks', 'Donwload tracks txt data file')
                           ),
                           mainPanel(
-                            plotOutput("plot_tracks", height = 600, width = 900),
+                            plotOutput("plot_tracks", height = 1100, width = 900),
                             tableOutput('tracks_summary'),
                             tableOutput('tracks_table')
                           )

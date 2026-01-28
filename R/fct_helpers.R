@@ -291,7 +291,8 @@ plot_scheme_find_peaks <- function(dane_find, odwroc = TRUE, color_point = 'red'
 #'
 #' @examples
 plot_kymograph_find_peaks <- function(dane_raw, dane_find, odwroc = TRUE, pokaz = TRUE,
-                                      color_point, color_gradient, lapse){
+                                      color_point, color_gradient, lapse, max_fluo = NA,
+                                      na_color = 'grey50'){
   
   #colnames(dane_raw) <- c('V1', 'V2')
   
@@ -330,7 +331,8 @@ plot_kymograph_find_peaks <- function(dane_raw, dane_find, odwroc = TRUE, pokaz 
     }
   }
   
-  p <- p + ggplot2::scale_fill_gradient("Fluorescence\nintensity", low = "black", high = color_gradient)+
+  p <- p + ggplot2::scale_fill_gradient("Fluorescence\nintensity", low = "black", high = color_gradient, 
+                                        limits = c(0, max_fluo), na.value = na_color)+
     ggplot2::theme_bw()+
     ggplot2::ylab(expression(paste("Length [", mu, "m]")))+
     ggplot2::xlab("Time [min]")
